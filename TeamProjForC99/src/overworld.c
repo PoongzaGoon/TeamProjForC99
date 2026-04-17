@@ -3,6 +3,13 @@
 #include "game.h"
 #include "fields/field1.h"
 #include "fields/field2.h"
+#include "fields/field3.h"
+#include "fields/field4.h"
+#include "fields/field5.h"
+#include "fields/field6.h"
+#include "fields/field7.h"
+#include "fields/field8.h"
+#include "fields/field9.h"
 
 static void Overworld_placePlayerOnEntry(const Overworld* world, int dRow, int dCol, Player* player) {
     const Map* currentMap = Overworld_getCurrentMapConst(world);
@@ -28,17 +35,17 @@ void Overworld_init(Overworld* world) {
       [field4][field5][field6]
       [field1][field2][field3]
     */
-    Map_loadFromArray(&world->fields[0][0], FIELD2_WIDTH, FIELD2_HEIGHT, FIELD2_DATA);
-    Map_loadFromArray(&world->fields[0][1], FIELD2_WIDTH, FIELD2_HEIGHT, FIELD2_DATA);
-    Map_loadFromArray(&world->fields[0][2], FIELD2_WIDTH, FIELD2_HEIGHT, FIELD2_DATA);
+    Map_loadFromArray(&world->fields[0][0], FIELD7_WIDTH, FIELD7_HEIGHT, FIELD7_DATA);
+    Map_loadFromArray(&world->fields[0][1], FIELD8_WIDTH, FIELD8_HEIGHT, FIELD8_DATA);
+    Map_loadFromArray(&world->fields[0][2], FIELD9_WIDTH, FIELD9_HEIGHT, FIELD9_DATA);
 
-    Map_loadFromArray(&world->fields[1][0], FIELD2_WIDTH, FIELD2_HEIGHT, FIELD2_DATA);
-    Map_loadFromArray(&world->fields[1][1], FIELD2_WIDTH, FIELD2_HEIGHT, FIELD2_DATA);
-    Map_loadFromArray(&world->fields[1][2], FIELD2_WIDTH, FIELD2_HEIGHT, FIELD2_DATA);
+    Map_loadFromArray(&world->fields[1][0], FIELD4_WIDTH, FIELD4_HEIGHT, FIELD4_DATA);
+    Map_loadFromArray(&world->fields[1][1], FIELD5_WIDTH, FIELD5_HEIGHT, FIELD5_DATA);
+    Map_loadFromArray(&world->fields[1][2], FIELD6_WIDTH, FIELD6_HEIGHT, FIELD6_DATA);
 
     Map_loadFromArray(&world->fields[2][0], FIELD1_WIDTH, FIELD1_HEIGHT, FIELD1_DATA);
     Map_loadFromArray(&world->fields[2][1], FIELD2_WIDTH, FIELD2_HEIGHT, FIELD2_DATA);
-    Map_loadFromArray(&world->fields[2][2], FIELD2_WIDTH, FIELD2_HEIGHT, FIELD2_DATA);
+    Map_loadFromArray(&world->fields[2][2], FIELD3_WIDTH, FIELD3_HEIGHT, FIELD3_DATA);
 
     world->currentRow = 2;
     world->currentCol = 0;
