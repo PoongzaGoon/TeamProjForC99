@@ -77,7 +77,7 @@ int Interaction_isDoorOpenForTransition(Game* game, int x, int y) {
         return 0;
     }
 
-    return entity->doorData.opened;
+    return Overworld_isDoorLinkOpened(&game->overworld, entity->doorData.linkId);
 }
 
 void Interaction_tryFront(Game* game) {

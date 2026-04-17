@@ -12,10 +12,10 @@ const int FIELD3_DATA[FIELD3_HEIGHT][MAP_W] = {
 
 
 const SpawnData FIELD3_SPAWNS[] = {
-    {SPAWN_DOOR, 6, 0, 0, 1, 0, -1},
-    {SPAWN_DOOR, 0, 3, 0, 1, 0, -1},
-    {SPAWN_DOOR, 12, 3, 0, 1, 0, -1},
-    {SPAWN_DOOR, 6, 6, 0, 1, 0, -1}
+    {SPAWN_DOOR, 6, 0, 0, 0, 0, 8},
+    {SPAWN_DOOR, 0, 3, 0, 0, 0, 1},
+    {SPAWN_DOOR, 12, 3, 0, 0, 0, -1},
+    {SPAWN_DOOR, 6, 6, 0, 0, 0, -1}
 };
 
 const int FIELD3_SPAWN_COUNT = (int)(sizeof(FIELD3_SPAWNS) / sizeof(FIELD3_SPAWNS[0]));

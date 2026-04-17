@@ -16,11 +16,11 @@ struct Game;
 typedef struct Entity Entity;
 
 typedef struct EntityVTable {
-    const wchar_t* (*render)(const Entity* entity);
+    const wchar_t* (*render)(const Entity* entity, const struct Game* game);
     int (*interact)(Entity* entity, struct Game* game);
     void (*takeDamage)(Entity* entity, int amount);
     void (*update)(Entity* entity, struct Game* game);
-    int (*isBlocking)(const Entity* entity);
+    int (*isBlocking)(const Entity* entity, const struct Game* game);
 } EntityVTable;
 
 typedef struct Entity {
@@ -40,7 +40,7 @@ typedef struct Entity {
 * 역할: Overworld 배치 기준으로 Spawn 데이터를 순회해 Door Entity를 초기화한다.
 * 입력: game - 게임 상태 포인터
 * 출력: game->entities / game->entityCount가 Door 기준으로 재구성된다.
-* 주의: 문 상태의 진실은 Entity에 두고 타일은 지형 데이터만 유지한다.
+* 주의: 문 상태의 진실은 Overworld doorLinks에 두고 Entity는 linkId만 참조한다.
 */
 void Entity_buildFromSpawns(struct Game* game);
 
