@@ -62,6 +62,27 @@
     <ClCompile Include="src\fields\field2.c">
       <Filter>소스 파일\src\fields</Filter>
     </ClCompile>
+    <ClCompile Include="src\fields\field3.c">
+      <Filter>소스 파일\src\fields</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fields\field4.c">
+      <Filter>소스 파일\src\fields</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fields\field5.c">
+      <Filter>소스 파일\src\fields</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fields\field6.c">
+      <Filter>소스 파일\src\fields</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fields\field7.c">
+      <Filter>소스 파일\src\fields</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fields\field8.c">
+      <Filter>소스 파일\src\fields</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fields\field9.c">
+      <Filter>소스 파일\src\fields</Filter>
+    </ClCompile>
     <ClCompile Include="src\systems\interaction.c">
       <Filter>소스 파일\src\systems</Filter>
     </ClCompile>
@@ -89,6 +110,27 @@
       <Filter>헤더 파일\src\fields</Filter>
     </ClInclude>
     <ClInclude Include="src\fields\field2.h">
+      <Filter>헤더 파일\src\fields</Filter>
+    </ClInclude>
+    <ClInclude Include="src\fields\field3.h">
+      <Filter>헤더 파일\src\fields</Filter>
+    </ClInclude>
+    <ClInclude Include="src\fields\field4.h">
+      <Filter>헤더 파일\src\fields</Filter>
+    </ClInclude>
+    <ClInclude Include="src\fields\field5.h">
+      <Filter>헤더 파일\src\fields</Filter>
+    </ClInclude>
+    <ClInclude Include="src\fields\field6.h">
+      <Filter>헤더 파일\src\fields</Filter>
+    </ClInclude>
+    <ClInclude Include="src\fields\field7.h">
+      <Filter>헤더 파일\src\fields</Filter>
+    </ClInclude>
+    <ClInclude Include="src\fields\field8.h">
+      <Filter>헤더 파일\src\fields</Filter>
+    </ClInclude>
+    <ClInclude Include="src\fields\field9.h">
       <Filter>헤더 파일\src\fields</Filter>
     </ClInclude>
     <ClInclude Include="src\systems\interaction.h">

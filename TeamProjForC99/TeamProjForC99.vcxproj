@@ -132,6 +132,13 @@
     <ClCompile Include="src\overworld.c" />
     <ClCompile Include="src\fields\field1.c" />
     <ClCompile Include="src\fields\field2.c" />
+    <ClCompile Include="src\fields\field3.c" />
+    <ClCompile Include="src\fields\field4.c" />
+    <ClCompile Include="src\fields\field5.c" />
+    <ClCompile Include="src\fields\field6.c" />
+    <ClCompile Include="src\fields\field7.c" />
+    <ClCompile Include="src\fields\field8.c" />
+    <ClCompile Include="src\fields\field9.c" />
     <ClCompile Include="src\render.c" />
     <ClCompile Include="src\systems\interaction.c" />
   </ItemGroup>
@@ -143,6 +150,13 @@
     <ClInclude Include="src\overworld.h" />
     <ClInclude Include="src\fields\field1.h" />
     <ClInclude Include="src\fields\field2.h" />
+    <ClInclude Include="src\fields\field3.h" />
+    <ClInclude Include="src\fields\field4.h" />
+    <ClInclude Include="src\fields\field5.h" />
+    <ClInclude Include="src\fields\field6.h" />
+    <ClInclude Include="src\fields\field7.h" />
+    <ClInclude Include="src\fields\field8.h" />
+    <ClInclude Include="src\fields\field9.h" />
     <ClInclude Include="src\render.h" />
     <ClInclude Include="src\systems\interaction.h" />
   </ItemGroup>
