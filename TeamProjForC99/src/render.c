@@ -93,7 +93,7 @@ static const wchar_t* Render_fieldTypeToText(FieldType fieldType) {
     }
 }
 
-static void Render_drawMap(const Game* game) {
+void Render_drawStaticMap(const Game* game) {
     const Map* currentMap = Stage_getCurrentMapConst(&game->stage);
     int x;
     int y;
@@ -103,16 +103,38 @@ static void Render_drawMap(const Game* game) {
     for (y = 0; y < currentMap->height; ++y) {
         Render_gotoXY(MAP_ORIGIN_X, MAP_ORIGIN_Y + y);
         for (x = 0; x < currentMap->width; ++x) {
-            if (game->player.x == x && game->player.y == y) {
-                Render_printW(L"🧙");
-            } else {
-                Render_printW(Render_tileToEmoji(Map_getTile(currentMap, x, y)));
-            }
+            Render_printW(Render_tileToEmoji(Map_getTile(currentMap, x, y)));
         }
     }
 }
 
-static void Render_drawUI(const Game* game) {
+void Render_redrawTile(const Game* game, int x, int y) {
+    const Map* currentMap = Stage_getCurrentMapConst(&game->stage);
+    int drawX;
+    int drawY;
+
+    if (!Map_isInside(currentMap, x, y)) {
+        return;
+    }
+
+    drawX = MAP_ORIGIN_X + (x * TILE_DRAW_W);
+    drawY = MAP_ORIGIN_Y + y;
+    Render_gotoXY(drawX, drawY);
+
+    if (game->player.x == x && game->player.y == y) {
+        Render_printW(L"🧙");
+    } else {
+        Render_printW(Render_tileToEmoji(Map_getTile(currentMap, x, y)));
+    }
+}
+
+void Render_drawPlayer(const Game* game) {
+    int drawX = MAP_ORIGIN_X + (game->player.x * TILE_DRAW_W);
+    int drawY = MAP_ORIGIN_Y + game->player.y;
+    Render_printAt(drawX, drawY, L"🧙");
+}
+
+void Render_refreshUI(const Game* game) {
     const Map* currentMap = Stage_getCurrentMapConst(&game->stage);
     int uiX = Render_uiOriginX(currentMap);
     int uiY = Render_uiOriginY();
@@ -144,7 +166,7 @@ static void Render_drawUI(const Game* game) {
     Render_printAt(uiX, uiY + 11, L"종료: Q");
 }
 
-static void Render_drawLog(const Game* game) {
+void Render_refreshLog(const Game* game) {
     const Map* currentMap = Stage_getCurrentMapConst(&game->stage);
     int logX = Render_logOriginX();
     int logY = Render_logOriginY(currentMap);
@@ -201,7 +223,7 @@ void Render_initConsole(void) {
     Render_clearWholeScreen();
 }
 
-void Render_handleResize(Game* game) {
+int Render_handleResize(Game* game) {
     int cols;
     int rows;
 
@@ -210,11 +232,7 @@ void Render_handleResize(Game* game) {
         Render_clearWholeScreen();
         game->prevCols = cols;
         game->prevRows = rows;
+        return 1;
     }
-}
-
-void Render_drawGame(const Game* game) {
-    Render_drawMap(game);
-    Render_drawUI(game);
-    Render_drawLog(game);
+    return 0;
 }

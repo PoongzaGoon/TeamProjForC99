@@ -27,6 +27,12 @@ typedef struct Game {
     int running;
     int prevCols;
     int prevRows;
+    int uiDirty;
+    int logDirty;
+    int fieldDirty;
+    int tileDirtyCount;
+    int tileDirtyX[8];
+    int tileDirtyY[8];
 } Game;
 
 /*
