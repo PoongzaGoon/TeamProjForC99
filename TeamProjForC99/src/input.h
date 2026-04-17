@@ -7,6 +7,7 @@ typedef enum InputCommand {
     INPUT_MOVE_DOWN,
     INPUT_MOVE_LEFT,
     INPUT_MOVE_RIGHT,
+    INPUT_INTERACT,
     INPUT_QUIT
 } InputCommand;
 

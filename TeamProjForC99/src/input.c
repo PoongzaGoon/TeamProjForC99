@@ -17,6 +17,11 @@ InputCommand Input_pollCommand(void) {
         }
     }
 
+
+    if (ch == 'e' || ch == 'E') {
+        return INPUT_INTERACT;
+    }
+
     if (ch == 'q' || ch == 'Q') {
         return INPUT_QUIT;
     }

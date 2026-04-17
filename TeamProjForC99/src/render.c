@@ -115,6 +115,7 @@ static void Render_drawUI(const Game* game) {
     Render_printAt(uiX, uiY + 6, buffer);
 
     Render_printAt(uiX, uiY + 8, L"이동: 방향키");
+    Render_printAt(uiX, uiY + 9, L"조사: E");
     Render_printAt(uiX, uiY + 10, L"종료: Q");
 }
 

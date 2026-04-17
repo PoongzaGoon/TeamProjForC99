@@ -2,6 +2,7 @@
 
 #include "input.h"
 #include "render.h"
+#include "systems/interaction.h"
 
 static void Game_movePlayer(Game* game, int dx, int dy, Direction dir) {
     int nx;
@@ -51,6 +52,9 @@ void Game_update(Game* game) {
         break;
     case INPUT_MOVE_RIGHT:
         Game_movePlayer(game, 1, 0, DIR_RIGHT);
+        break;
+    case INPUT_INTERACT:
+        Interaction_tryFront(game);
         break;
     case INPUT_QUIT:
         game->running = 0;
