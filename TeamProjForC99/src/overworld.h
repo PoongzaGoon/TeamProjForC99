@@ -16,6 +16,7 @@ typedef struct Overworld {
 } Overworld;
 
 void Overworld_init(Overworld* world);
+void Overworld_validateDoorTransitions(const Overworld* world, LogSystem* logSystem);
 Map* Overworld_getCurrentMap(Overworld* world);
 const Map* Overworld_getCurrentMapConst(const Overworld* world);
 int Overworld_tryMoveField(Overworld* world, int dRow, int dCol, Player* player, LogSystem* logSystem);

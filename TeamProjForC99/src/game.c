@@ -132,6 +132,7 @@ void Game_init(Game* game) {
     game->player.keyCount = 0;
 
     Log_init(&game->logSystem);
+    Overworld_validateDoorTransitions(&game->overworld, &game->logSystem);
     Log_push(&game->logSystem, L"스테이지를 시작한다.");
 
     game->entityCount = 0;
