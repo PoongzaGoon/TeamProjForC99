@@ -9,20 +9,26 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="소스 파일\\prototype">
+    <Filter Include="소스 파일\prototype">
       <UniqueIdentifier>{3e70f7e2-55bd-43da-925d-c1cc8fb12e7f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\\src">
+    <Filter Include="소스 파일\src">
       <UniqueIdentifier>{f407d52d-0053-475e-b2fd-0546d355daeb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="헤더 파일\\src">
+    <Filter Include="헤더 파일\src">
       <UniqueIdentifier>{c11bf4d2-f307-4fca-9121-7547fbadf5f8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\\src\\systems">
+    <Filter Include="소스 파일\src\systems">
       <UniqueIdentifier>{8f349f79-2971-47e4-adf7-a4b7af4ef0a1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="헤더 파일\\src\\systems">
+    <Filter Include="헤더 파일\src\systems">
       <UniqueIdentifier>{95e6f239-1d63-495e-a1c1-5f80562d8d65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\src\stages">
+      <UniqueIdentifier>{914f47d6-6f36-4c88-80af-3d5f4ce0cf04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\src\stages">
+      <UniqueIdentifier>{8108de4e-6674-4ec4-9760-11c4545d2bc5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -47,6 +53,15 @@
     <ClCompile Include="src\render.c">
       <Filter>소스 파일\src</Filter>
     </ClCompile>
+    <ClCompile Include="src\stage.c">
+      <Filter>소스 파일\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stages\stage1.c">
+      <Filter>소스 파일\src\stages</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stages\stage2.c">
+      <Filter>소스 파일\src\stages</Filter>
+    </ClCompile>
     <ClCompile Include="src\systems\interaction.c">
       <Filter>소스 파일\src\systems</Filter>
     </ClCompile>
@@ -66,6 +81,15 @@
     </ClInclude>
     <ClInclude Include="src\render.h">
       <Filter>헤더 파일\src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stage.h">
+      <Filter>헤더 파일\src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stages\stage1.h">
+      <Filter>헤더 파일\src\stages</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stages\stage2.h">
+      <Filter>헤더 파일\src\stages</Filter>
     </ClInclude>
     <ClInclude Include="src\systems\interaction.h">
       <Filter>헤더 파일\src\systems</Filter>

@@ -4,16 +4,48 @@
 #include "render.h"
 #include "systems/interaction.h"
 
+static int Game_tryTransitionByBoundary(Game* game, const Map* currentMap, int nx, int ny) {
+    if (nx < 0) {
+        return Stage_tryMoveField(&game->stage, 0, -1, &game->player, &game->logSystem);
+    }
+    if (nx >= currentMap->width) {
+        return Stage_tryMoveField(&game->stage, 0, 1, &game->player, &game->logSystem);
+    }
+    if (ny < 0) {
+        return Stage_tryMoveField(&game->stage, -1, 0, &game->player, &game->logSystem);
+    }
+    if (ny >= currentMap->height) {
+        return Stage_tryMoveField(&game->stage, 1, 0, &game->player, &game->logSystem);
+    }
+    return 0;
+}
+
 static void Game_movePlayer(Game* game, int dx, int dy, Direction dir) {
+    Map* currentMap = Stage_getCurrentMap(&game->stage);
     int nx;
     int ny;
+    int tile;
 
     game->player.dir = dir;
     nx = game->player.x + dx;
     ny = game->player.y + dy;
 
-    if (Map_isBlocked(&game->map, nx, ny)) {
-        Log_push(&game->logSystem, L"벽이라 이동할 수 없다.");
+    if (!Map_isInside(currentMap, nx, ny)) {
+        if (!Game_tryTransitionByBoundary(game, currentMap, nx, ny)) {
+            Log_push(&game->logSystem, L"경계를 넘을 수 없다.");
+        }
+        return;
+    }
+
+    tile = Map_getTile(currentMap, nx, ny);
+    if (tile == TILE_DOOR_OPEN && Map_isBoundary(currentMap, nx, ny)) {
+        if (Stage_tryMoveByFacing(&game->stage, game->player.dir, &game->player, &game->logSystem)) {
+            return;
+        }
+    }
+
+    if (Map_isBlocked(currentMap, nx, ny)) {
+        Log_push(&game->logSystem, L"벽 또는 잠긴 문이라 이동할 수 없다.");
         return;
     }
 
@@ -23,17 +55,19 @@ static void Game_movePlayer(Game* game, int dx, int dy, Direction dir) {
 }
 
 void Game_init(Game* game) {
-    Map_init(&game->map);
+    Stage_init(&game->stage);
 
-    game->player.x = 1;
-    game->player.y = 1;
+    game->player.x = 2;
+    game->player.y = 2;
     game->player.dir = DIR_RIGHT;
     game->player.hp = 3;
     game->player.bombCount = 0;
+    game->player.keyCount = 0;
 
     Log_init(&game->logSystem);
-    game->running = 1;
+    Log_push(&game->logSystem, L"스테이지를 시작한다.");
 
+    game->running = 1;
     Render_getConsoleSize(&game->prevCols, &game->prevRows);
 }
 

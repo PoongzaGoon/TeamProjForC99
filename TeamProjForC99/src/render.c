@@ -36,16 +36,16 @@ static void Render_clearRect(int x, int y, int w, int h) {
     }
 }
 
-static int Render_mapDrawWidth(void) {
-    return MAP_W * TILE_DRAW_W;
+static int Render_mapDrawWidth(const Map* map) {
+    return map->width * TILE_DRAW_W;
 }
 
-static int Render_mapDrawHeight(void) {
-    return MAP_H;
+static int Render_mapDrawHeight(const Map* map) {
+    return map->height;
 }
 
-static int Render_uiOriginX(void) {
-    return MAP_ORIGIN_X + Render_mapDrawWidth() + UI_GAP_X;
+static int Render_uiOriginX(const Map* map) {
+    return MAP_ORIGIN_X + Render_mapDrawWidth(map) + UI_GAP_X;
 }
 
 static int Render_uiOriginY(void) {
@@ -56,8 +56,8 @@ static int Render_logOriginX(void) {
     return MAP_ORIGIN_X;
 }
 
-static int Render_logOriginY(void) {
-    int mapBottom = MAP_ORIGIN_Y + Render_mapDrawHeight();
+static int Render_logOriginY(const Map* map) {
+    int mapBottom = MAP_ORIGIN_Y + Render_mapDrawHeight(map);
     int uiBottom = Render_uiOriginY() + UI_BOX_H;
     return (mapBottom > uiBottom ? mapBottom : uiBottom) + LOG_GAP_Y;
 }
@@ -65,8 +65,10 @@ static int Render_logOriginY(void) {
 static const wchar_t* Render_tileToEmoji(int tile) {
     switch (tile) {
     case TILE_WALL: return L"🧱";
-    case TILE_DOOR: return L"🚪";
+    case TILE_DOOR_LOCKED: return L"🚪";
+    case TILE_DOOR_OPEN: return L"⭐";
     case TILE_BOMB: return L"💣";
+    case TILE_KEY_ITEM: return L"🔑";
     default: return L"  ";
     }
 }
@@ -81,24 +83,38 @@ static const wchar_t* Render_dirToText(Direction dir) {
     }
 }
 
+static const wchar_t* Render_fieldTypeToText(FieldType fieldType) {
+    switch (fieldType) {
+    case FIELD_START: return L"시작";
+    case FIELD_COMBAT: return L"전투";
+    case FIELD_BONUS: return L"보너스";
+    case FIELD_BOSS: return L"보스";
+    default: return L"?";
+    }
+}
+
 static void Render_drawMap(const Game* game) {
+    const Map* currentMap = Stage_getCurrentMapConst(&game->stage);
     int x;
     int y;
 
-    for (y = 0; y < MAP_H; ++y) {
+    Render_clearRect(MAP_ORIGIN_X, MAP_ORIGIN_Y, MAP_W * TILE_DRAW_W, MAP_H);
+
+    for (y = 0; y < currentMap->height; ++y) {
         Render_gotoXY(MAP_ORIGIN_X, MAP_ORIGIN_Y + y);
-        for (x = 0; x < MAP_W; ++x) {
+        for (x = 0; x < currentMap->width; ++x) {
             if (game->player.x == x && game->player.y == y) {
                 Render_printW(L"🧙");
             } else {
-                Render_printW(Render_tileToEmoji(Map_getTile(&game->map, x, y)));
+                Render_printW(Render_tileToEmoji(Map_getTile(currentMap, x, y)));
             }
         }
     }
 }
 
 static void Render_drawUI(const Game* game) {
-    int uiX = Render_uiOriginX();
+    const Map* currentMap = Stage_getCurrentMapConst(&game->stage);
+    int uiX = Render_uiOriginX(currentMap);
     int uiY = Render_uiOriginY();
     wchar_t buffer[64];
 
@@ -111,17 +127,27 @@ static void Render_drawUI(const Game* game) {
     swprintf(buffer, 64, L"폭탄: 💣 x%d", game->player.bombCount);
     Render_printAt(uiX, uiY + 4, buffer);
 
-    swprintf(buffer, 64, L"방향: %ls", Render_dirToText(game->player.dir));
+    swprintf(buffer, 64, L"열쇠: 🔑 x%d", game->player.keyCount);
     Render_printAt(uiX, uiY + 6, buffer);
 
-    Render_printAt(uiX, uiY + 8, L"이동: 방향키");
-    Render_printAt(uiX, uiY + 9, L"조사: E");
-    Render_printAt(uiX, uiY + 10, L"종료: Q");
+    swprintf(buffer, 64, L"방향: %ls", Render_dirToText(game->player.dir));
+    Render_printAt(uiX, uiY + 7, buffer);
+
+    swprintf(buffer, 64, L"필드: %ls (%d,%d)",
+        Render_fieldTypeToText(Stage_getCurrentMapConst(&game->stage)->fieldType),
+        game->stage.currentRow,
+        game->stage.currentCol);
+    Render_printAt(uiX, uiY + 8, buffer);
+
+    Render_printAt(uiX, uiY + 9, L"이동: 방향키");
+    Render_printAt(uiX, uiY + 10, L"조사: E");
+    Render_printAt(uiX, uiY + 11, L"종료: Q");
 }
 
 static void Render_drawLog(const Game* game) {
+    const Map* currentMap = Stage_getCurrentMapConst(&game->stage);
     int logX = Render_logOriginX();
-    int logY = Render_logOriginY();
+    int logY = Render_logOriginY(currentMap);
     int i;
 
     Render_clearRect(logX, logY, LOG_BOX_W, LOG_BOX_H);
@@ -136,8 +162,8 @@ static void Render_drawLog(const Game* game) {
 
 static void Render_applyLayout(void) {
     wchar_t cmd[64];
-    int totalCols = Render_uiOriginX() + UI_BOX_W + 2;
-    int totalRows = Render_logOriginY() + LOG_BOX_H + 2;
+    int totalCols = MAP_ORIGIN_X + (MAP_W * TILE_DRAW_W) + UI_GAP_X + UI_BOX_W + 2;
+    int totalRows = MAP_ORIGIN_Y + MAP_H + LOG_GAP_Y + LOG_BOX_H + 2;
 
     swprintf(cmd, 64, L"mode con: cols=%d lines=%d", totalCols, totalRows);
     _wsystem(cmd);
