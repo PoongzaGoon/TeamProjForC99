@@ -26,10 +26,12 @@ static int Entity_addDoor(Game* game, int fieldRow, int fieldCol, int x, int y, 
 /*
 [Function]
 
-* 역할: Overworld 현재 배치의 Spawn 데이터를 순회해 Door Entity를 초기화한다.
-* 입력: game - 게임 상태 포인터
-* 출력: game->entities / game->entityCount가 Door 기준으로 재구성된다.
-* 주의: Door 초기 잠금/열림 상태는 Overworld의 doorLinks를 단일 소스로 사용한다.
+* 역할: 필드별 스폰 정의를 런타임 Entity 배열로 변환해 상호작용 시스템이 문을 조회할 수 있게 만든다.
+* 호출 위치: Game_init에서 스테이지 시작 직후 1회 호출되어 엔티티 기준 테이블을 구축한다.
+* 입력: game - Overworld/엔티티 저장소를 함께 가진 게임 상태.
+* 출력: game->entities와 game->entityCount가 Door 스폰 기준으로 재작성된다.
+* 상태 변화: 기존 엔티티 카운트가 0으로 리셋되고, 각 Door가 field 좌표와 linkId를 가진 채 활성화된다.
+* 주의: 문의 잠금 상태 자체는 저장하지 않고 linkId만 보관해 Overworld doorLinks와 동기화한다.
 */
 void Entity_buildFromSpawns(Game* game) {
     int row;
