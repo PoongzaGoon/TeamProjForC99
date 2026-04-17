@@ -18,6 +18,12 @@
     <Filter Include="헤더 파일\\src">
       <UniqueIdentifier>{c11bf4d2-f307-4fca-9121-7547fbadf5f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\\src\\systems">
+      <UniqueIdentifier>{8f349f79-2971-47e4-adf7-a4b7af4ef0a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\\src\\systems">
+      <UniqueIdentifier>{95e6f239-1d63-495e-a1c1-5f80562d8d65}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test.c">
@@ -41,6 +47,9 @@
     <ClCompile Include="src\render.c">
       <Filter>소스 파일\src</Filter>
     </ClCompile>
+    <ClCompile Include="src\systems\interaction.c">
+      <Filter>소스 파일\src\systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game.h">
@@ -57,6 +66,9 @@
     </ClInclude>
     <ClInclude Include="src\render.h">
       <Filter>헤더 파일\src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\systems\interaction.h">
+      <Filter>헤더 파일\src\systems</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
