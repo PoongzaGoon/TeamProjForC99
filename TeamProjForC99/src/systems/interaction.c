@@ -2,7 +2,7 @@
 
 #include "../log.h"
 #include "../map.h"
-#include "../stage.h"
+#include "../overworld.h"
 
 static void Interaction_getFrontTile(const Player* player, int* x, int* y) {
     *x = player->x;
@@ -42,7 +42,7 @@ static int Interaction_tryEntity(Game* game, int x, int y) {
 * 주의: 이동/전투 판정은 포함하지 않고 상호작용 규칙만 처리한다.
 */
 static void Interaction_tryTile(Game* game, int x, int y) {
-    Map* currentMap = Stage_getCurrentMap(&game->stage);
+    Map* currentMap = Overworld_getCurrentMap(&game->overworld);
     int tile = Map_getTile(currentMap, x, y);
 
     switch (tile) {
@@ -63,7 +63,7 @@ static void Interaction_tryTile(Game* game, int x, int y) {
         break;
     case TILE_DOOR_OPEN:
         if (Map_isBoundary(currentMap, x, y)) {
-            Stage_tryMoveByFacing(&game->stage, game->player.dir, &game->player, &game->logSystem);
+            Overworld_tryMoveByFacing(&game->overworld, game->player.dir, &game->player, &game->logSystem);
         } else {
             Log_push(&game->logSystem, L"열린 문이다.");
         }

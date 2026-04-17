@@ -83,18 +83,8 @@ static const wchar_t* Render_dirToText(Direction dir) {
     }
 }
 
-static const wchar_t* Render_fieldTypeToText(FieldType fieldType) {
-    switch (fieldType) {
-    case FIELD_START: return L"시작";
-    case FIELD_COMBAT: return L"전투";
-    case FIELD_BONUS: return L"보너스";
-    case FIELD_BOSS: return L"보스";
-    default: return L"?";
-    }
-}
-
 void Render_drawStaticMap(const Game* game) {
-    const Map* currentMap = Stage_getCurrentMapConst(&game->stage);
+    const Map* currentMap = Overworld_getCurrentMapConst(&game->overworld);
     int x;
     int y;
 
@@ -109,7 +99,7 @@ void Render_drawStaticMap(const Game* game) {
 }
 
 void Render_redrawTile(const Game* game, int x, int y) {
-    const Map* currentMap = Stage_getCurrentMapConst(&game->stage);
+    const Map* currentMap = Overworld_getCurrentMapConst(&game->overworld);
     int drawX;
     int drawY;
 
@@ -135,7 +125,7 @@ void Render_drawPlayer(const Game* game) {
 }
 
 void Render_refreshUI(const Game* game) {
-    const Map* currentMap = Stage_getCurrentMapConst(&game->stage);
+    const Map* currentMap = Overworld_getCurrentMapConst(&game->overworld);
     int uiX = Render_uiOriginX(currentMap);
     int uiY = Render_uiOriginY();
     wchar_t buffer[64];
@@ -155,10 +145,9 @@ void Render_refreshUI(const Game* game) {
     swprintf(buffer, 64, L"방향: %ls", Render_dirToText(game->player.dir));
     Render_printAt(uiX, uiY + 7, buffer);
 
-    swprintf(buffer, 64, L"필드: %ls (%d,%d)",
-        Render_fieldTypeToText(Stage_getCurrentMapConst(&game->stage)->fieldType),
-        game->stage.currentRow,
-        game->stage.currentCol);
+    swprintf(buffer, 64, L"필드 좌표: (%d,%d)",
+        game->overworld.currentRow,
+        game->overworld.currentCol);
     Render_printAt(uiX, uiY + 8, buffer);
 
     Render_printAt(uiX, uiY + 9, L"이동: 방향키");
@@ -167,7 +156,7 @@ void Render_refreshUI(const Game* game) {
 }
 
 void Render_refreshLog(const Game* game) {
-    const Map* currentMap = Stage_getCurrentMapConst(&game->stage);
+    const Map* currentMap = Overworld_getCurrentMapConst(&game->overworld);
     int logX = Render_logOriginX();
     int logY = Render_logOriginY(currentMap);
     int i;

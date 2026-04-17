@@ -74,22 +74,22 @@ static void Game_getFrontTileByDir(int x, int y, Direction dir, int* outX, int* 
 
 static int Game_tryTransitionByBoundary(Game* game, const Map* currentMap, int nx, int ny) {
     if (nx < 0) {
-        return Stage_tryMoveField(&game->stage, 0, -1, &game->player, &game->logSystem);
+        return Overworld_tryMoveField(&game->overworld, 0, -1, &game->player, &game->logSystem);
     }
     if (nx >= currentMap->width) {
-        return Stage_tryMoveField(&game->stage, 0, 1, &game->player, &game->logSystem);
+        return Overworld_tryMoveField(&game->overworld, 0, 1, &game->player, &game->logSystem);
     }
     if (ny < 0) {
-        return Stage_tryMoveField(&game->stage, -1, 0, &game->player, &game->logSystem);
+        return Overworld_tryMoveField(&game->overworld, -1, 0, &game->player, &game->logSystem);
     }
     if (ny >= currentMap->height) {
-        return Stage_tryMoveField(&game->stage, 1, 0, &game->player, &game->logSystem);
+        return Overworld_tryMoveField(&game->overworld, 1, 0, &game->player, &game->logSystem);
     }
     return 0;
 }
 
 static void Game_movePlayer(Game* game, int dx, int dy, Direction dir) {
-    Map* currentMap = Stage_getCurrentMap(&game->stage);
+    Map* currentMap = Overworld_getCurrentMap(&game->overworld);
     int nx;
     int ny;
     int tile;
@@ -107,7 +107,7 @@ static void Game_movePlayer(Game* game, int dx, int dy, Direction dir) {
 
     tile = Map_getTile(currentMap, nx, ny);
     if (tile == TILE_DOOR_OPEN && Map_isBoundary(currentMap, nx, ny)) {
-        if (Stage_tryMoveByFacing(&game->stage, game->player.dir, &game->player, &game->logSystem)) {
+        if (Overworld_tryMoveByFacing(&game->overworld, game->player.dir, &game->player, &game->logSystem)) {
             return;
         }
     }
@@ -123,7 +123,7 @@ static void Game_movePlayer(Game* game, int dx, int dy, Direction dir) {
 }
 
 void Game_init(Game* game) {
-    Stage_init(&game->stage);
+    Overworld_init(&game->overworld);
 
     game->player.x = 2;
     game->player.y = 2;
@@ -146,9 +146,9 @@ void Game_init(Game* game) {
 void Game_update(Game* game) {
     LogSystem logBefore;
     Player playerBefore;
-    int rowBefore = game->stage.currentRow;
-    int colBefore = game->stage.currentCol;
-    Map* mapBefore = Stage_getCurrentMap(&game->stage);
+    int rowBefore = game->overworld.currentRow;
+    int colBefore = game->overworld.currentCol;
+    Map* mapBefore = Overworld_getCurrentMap(&game->overworld);
     int interactX = 0;
     int interactY = 0;
     int interactTileBefore = TILE_EMPTY;
@@ -196,7 +196,7 @@ void Game_update(Game* game) {
         break;
     }
 
-    if (rowBefore != game->stage.currentRow || colBefore != game->stage.currentCol) {
+    if (rowBefore != game->overworld.currentRow || colBefore != game->overworld.currentCol) {
         game->fieldDirty = 1;
     } else {
         if (playerBefore.x != game->player.x || playerBefore.y != game->player.y) {
@@ -205,7 +205,7 @@ void Game_update(Game* game) {
         }
 
         if (canTrackInteractTile) {
-            Map* mapAfter = Stage_getCurrentMap(&game->stage);
+            Map* mapAfter = Overworld_getCurrentMap(&game->overworld);
             int interactTileAfter = Map_getTile(mapAfter, interactX, interactY);
             if (interactTileBefore != interactTileAfter) {
                 Game_markTileDirty(game, interactX, interactY);

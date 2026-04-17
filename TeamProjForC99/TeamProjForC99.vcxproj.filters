@@ -24,11 +24,11 @@
     <Filter Include="헤더 파일\src\systems">
       <UniqueIdentifier>{95e6f239-1d63-495e-a1c1-5f80562d8d65}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\src\stages">
-      <UniqueIdentifier>{914f47d6-6f36-4c88-80af-3d5f4ce0cf04}</UniqueIdentifier>
+    <Filter Include="소스 파일\src\fields">
+      <UniqueIdentifier>{7f6b6e7e-6cbe-43fc-8bf1-a250667f78d1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="헤더 파일\src\stages">
-      <UniqueIdentifier>{8108de4e-6674-4ec4-9760-11c4545d2bc5}</UniqueIdentifier>
+    <Filter Include="헤더 파일\src\fields">
+      <UniqueIdentifier>{6e5b7ef2-238e-4a5c-b45f-7dc396f4577c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -50,17 +50,17 @@
     <ClCompile Include="src\map.c">
       <Filter>소스 파일\src</Filter>
     </ClCompile>
+    <ClCompile Include="src\overworld.c">
+      <Filter>소스 파일\src</Filter>
+    </ClCompile>
     <ClCompile Include="src\render.c">
       <Filter>소스 파일\src</Filter>
     </ClCompile>
-    <ClCompile Include="src\stage.c">
-      <Filter>소스 파일\src</Filter>
+    <ClCompile Include="src\fields\field1.c">
+      <Filter>소스 파일\src\fields</Filter>
     </ClCompile>
-    <ClCompile Include="src\stages\stage1.c">
-      <Filter>소스 파일\src\stages</Filter>
-    </ClCompile>
-    <ClCompile Include="src\stages\stage2.c">
-      <Filter>소스 파일\src\stages</Filter>
+    <ClCompile Include="src\fields\field2.c">
+      <Filter>소스 파일\src\fields</Filter>
     </ClCompile>
     <ClCompile Include="src\systems\interaction.c">
       <Filter>소스 파일\src\systems</Filter>
@@ -79,17 +79,17 @@
     <ClInclude Include="src\map.h">
       <Filter>헤더 파일\src</Filter>
     </ClInclude>
+    <ClInclude Include="src\overworld.h">
+      <Filter>헤더 파일\src</Filter>
+    </ClInclude>
     <ClInclude Include="src\render.h">
       <Filter>헤더 파일\src</Filter>
     </ClInclude>
-    <ClInclude Include="src\stage.h">
-      <Filter>헤더 파일\src</Filter>
+    <ClInclude Include="src\fields\field1.h">
+      <Filter>헤더 파일\src\fields</Filter>
     </ClInclude>
-    <ClInclude Include="src\stages\stage1.h">
-      <Filter>헤더 파일\src\stages</Filter>
-    </ClInclude>
-    <ClInclude Include="src\stages\stage2.h">
-      <Filter>헤더 파일\src\stages</Filter>
+    <ClInclude Include="src\fields\field2.h">
+      <Filter>헤더 파일\src\fields</Filter>
     </ClInclude>
     <ClInclude Include="src\systems\interaction.h">
       <Filter>헤더 파일\src\systems</Filter>
