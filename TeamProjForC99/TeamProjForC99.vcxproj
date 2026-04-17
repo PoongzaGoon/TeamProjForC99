@@ -130,6 +130,9 @@
     <ClCompile Include="src\main.c" />
     <ClCompile Include="src\map.c" />
     <ClCompile Include="src\render.c" />
+    <ClCompile Include="src\stage.c" />
+    <ClCompile Include="src\stages\stage1.c" />
+    <ClCompile Include="src\stages\stage2.c" />
     <ClCompile Include="src\systems\interaction.c" />
   </ItemGroup>
   <ItemGroup>
@@ -138,6 +141,9 @@
     <ClInclude Include="src\log.h" />
     <ClInclude Include="src\map.h" />
     <ClInclude Include="src\render.h" />
+    <ClInclude Include="src\stage.h" />
+    <ClInclude Include="src\stages\stage1.h" />
+    <ClInclude Include="src\stages\stage2.h" />
     <ClInclude Include="src\systems\interaction.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
