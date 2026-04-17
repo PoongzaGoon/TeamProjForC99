@@ -5,13 +5,10 @@ struct Entity;
 struct EntityVTable;
 
 typedef struct DoorData {
-    int locked;
-    int opened;
-    int keyId;
     int linkId;
 } DoorData;
 
 const struct EntityVTable* Door_getVTable(void);
-void Door_init(struct Entity* entity, int locked, int opened, int keyId, int linkId);
+void Door_init(struct Entity* entity, int linkId);
 
 #endif

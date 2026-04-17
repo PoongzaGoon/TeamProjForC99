@@ -14,10 +14,10 @@ const int FIELD5_DATA[FIELD5_HEIGHT][MAP_W] = {
 
 
 const SpawnData FIELD5_SPAWNS[] = {
-    {SPAWN_DOOR, 8, 0, 0, 1, 0, -1},
-    {SPAWN_DOOR, 0, 4, 0, 1, 0, -1},
-    {SPAWN_DOOR, 16, 4, 0, 1, 0, -1},
-    {SPAWN_DOOR, 8, 8, 0, 1, 0, -1}
+    {SPAWN_DOOR, 8, 0, 0, 0, 0, 10},
+    {SPAWN_DOOR, 0, 4, 0, 0, 0, 2},
+    {SPAWN_DOOR, 16, 4, 0, 0, 0, 3},
+    {SPAWN_DOOR, 8, 8, 0, 0, 0, 7}
 };
 
 const int FIELD5_SPAWN_COUNT = (int)(sizeof(FIELD5_SPAWNS) / sizeof(FIELD5_SPAWNS[0]));

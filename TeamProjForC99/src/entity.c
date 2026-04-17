@@ -6,7 +6,7 @@
 #include "field_spawns.h"
 #include "overworld.h"
 
-static int Entity_addDoor(Game* game, int fieldRow, int fieldCol, int x, int y, int locked, int opened, int keyId, int linkId) {
+static int Entity_addDoor(Game* game, int fieldRow, int fieldCol, int x, int y, int linkId) {
     Entity* entity;
 
     if (game->entityCount >= MAX_ENTITIES) {
@@ -19,7 +19,7 @@ static int Entity_addDoor(Game* game, int fieldRow, int fieldCol, int x, int y, 
     entity->fieldCol = fieldCol;
     entity->x = x;
     entity->y = y;
-    Door_init(entity, locked, opened, keyId, linkId);
+    Door_init(entity, linkId);
     return 1;
 }
 
@@ -29,7 +29,7 @@ static int Entity_addDoor(Game* game, int fieldRow, int fieldCol, int x, int y, 
 * 역할: Overworld 현재 배치의 Spawn 데이터를 순회해 Door Entity를 초기화한다.
 * 입력: game - 게임 상태 포인터
 * 출력: game->entities / game->entityCount가 Door 기준으로 재구성된다.
-* 주의: Door 초기 상태는 spawn arg 값(locked/opened/keyId/linkId)으로만 결정한다.
+* 주의: Door 초기 잠금/열림 상태는 Overworld의 doorLinks를 단일 소스로 사용한다.
 */
 void Entity_buildFromSpawns(Game* game) {
     int row;
@@ -57,9 +57,6 @@ void Entity_buildFromSpawns(Game* game) {
                         col,
                         spawn->x,
                         spawn->y,
-                        spawn->arg0,
-                        spawn->arg1,
-                        spawn->arg2,
                         spawn->arg3
                     );
                 }
@@ -105,7 +102,7 @@ int Entity_isBlockedAtCurrentField(const Game* game, int x, int y) {
         return 0;
     }
 
-    return entity->vtable->isBlocking(entity);
+    return entity->vtable->isBlocking(entity, game);
 }
 
 const wchar_t* Entity_renderAtCurrentField(const Game* game, int x, int y) {
@@ -115,5 +112,5 @@ const wchar_t* Entity_renderAtCurrentField(const Game* game, int x, int y) {
         return NULL;
     }
 
-    return entity->vtable->render(entity);
+    return entity->vtable->render(entity, game);
 }

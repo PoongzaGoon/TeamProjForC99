@@ -11,8 +11,8 @@ const int FIELD1_DATA[FIELD1_HEIGHT][MAP_W] = {
 
 
 const SpawnData FIELD1_SPAWNS[] = {
-    {SPAWN_DOOR, 4, 0, 0, 1, 0, -1},
-    {SPAWN_DOOR, 8, 2, 1, 0, 1, -1}
+    {SPAWN_DOOR, 4, 0, 0, 0, 0, 6},
+    {SPAWN_DOOR, 8, 2, 0, 0, 0, 0}
 };
 
 const int FIELD1_SPAWN_COUNT = (int)(sizeof(FIELD1_SPAWNS) / sizeof(FIELD1_SPAWNS[0]));

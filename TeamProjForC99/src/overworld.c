@@ -12,6 +12,45 @@
 #include "fields/field8.h"
 #include "fields/field9.h"
 
+enum DoorLinkId {
+    LINK_FIELD1_FIELD2 = 0,
+    LINK_FIELD2_FIELD3,
+    LINK_FIELD4_FIELD5,
+    LINK_FIELD5_FIELD6,
+    LINK_FIELD7_FIELD8,
+    LINK_FIELD8_FIELD9,
+    LINK_FIELD1_FIELD4,
+    LINK_FIELD2_FIELD5,
+    LINK_FIELD3_FIELD6,
+    LINK_FIELD4_FIELD7,
+    LINK_FIELD5_FIELD8,
+    LINK_FIELD6_FIELD9
+};
+
+static int Overworld_isValidDoorLinkId(int linkId) {
+    return linkId >= 0 && linkId < OVERWORLD_DOOR_LINK_COUNT;
+}
+
+/*
+[Function]
+
+* 역할: Overworld 전체 문 링크의 초기 잠금/열림 상태를 단일 소스로 정의한다.
+* 입력: world - Overworld 상태 포인터
+* 출력: world->doorLinks 배열이 링크 ID 기준으로 초기화된다.
+* 주의: 필드 스폰 데이터의 locked/opened 값은 사용하지 않으며 linkId만 신뢰한다.
+*/
+static void Overworld_initDoorLinks(Overworld* world) {
+    int i;
+
+    for (i = 0; i < OVERWORLD_DOOR_LINK_COUNT; ++i) {
+        world->doorLinks[i].locked = 0;
+        world->doorLinks[i].opened = 1;
+    }
+
+    world->doorLinks[LINK_FIELD1_FIELD2].locked = 1;
+    world->doorLinks[LINK_FIELD1_FIELD2].opened = 0;
+}
+
 static int Overworld_findBoundaryDoorByDirection(
     const Overworld* world,
     int dRow,
@@ -222,6 +261,7 @@ void Overworld_init(Overworld* world) {
 
     world->currentRow = 2;
     world->currentCol = 0;
+    Overworld_initDoorLinks(world);
 }
 
 Map* Overworld_getCurrentMap(Overworld* world) {
@@ -266,4 +306,38 @@ int Overworld_tryMoveByFacing(Overworld* world, int dir, Player* player, LogSyst
     default:
         return 0;
     }
+}
+
+int Overworld_isDoorLinkLocked(const Overworld* world, int linkId) {
+    if (!world || !Overworld_isValidDoorLinkId(linkId)) {
+        return 0;
+    }
+
+    return world->doorLinks[linkId].locked;
+}
+
+int Overworld_isDoorLinkOpened(const Overworld* world, int linkId) {
+    if (!world || !Overworld_isValidDoorLinkId(linkId)) {
+        return 1;
+    }
+
+    return world->doorLinks[linkId].opened;
+}
+
+/*
+[Function]
+
+* 역할: 문 링크 상태를 잠금 해제하여 연결된 양쪽 문의 열림 상태를 동기화한다.
+* 입력: world - Overworld 상태 포인터, linkId - 잠금 해제할 문 링크 ID
+* 출력: 성공 시 1, 실패(유효하지 않은 linkId) 시 0
+* 주의: 문 상태의 authoritative source는 world->doorLinks 배열 하나만 사용한다.
+*/
+int Overworld_unlockDoorLink(Overworld* world, int linkId) {
+    if (!world || !Overworld_isValidDoorLinkId(linkId)) {
+        return 0;
+    }
+
+    world->doorLinks[linkId].locked = 0;
+    world->doorLinks[linkId].opened = 1;
+    return 1;
 }
