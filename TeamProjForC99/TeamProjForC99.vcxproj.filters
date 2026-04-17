@@ -9,17 +9,54 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="리소스 파일">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="소스 파일\prototype">
+    <Filter Include="소스 파일\\prototype">
       <UniqueIdentifier>{3e70f7e2-55bd-43da-925d-c1cc8fb12e7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\\src">
+      <UniqueIdentifier>{f407d52d-0053-475e-b2fd-0546d355daeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\\src">
+      <UniqueIdentifier>{c11bf4d2-f307-4fca-9121-7547fbadf5f8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test.c">
       <Filter>소스 파일\prototype</Filter>
     </ClCompile>
+    <ClCompile Include="src\game.c">
+      <Filter>소스 파일\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\input.c">
+      <Filter>소스 파일\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\log.c">
+      <Filter>소스 파일\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.c">
+      <Filter>소스 파일\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\map.c">
+      <Filter>소스 파일\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render.c">
+      <Filter>소스 파일\src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\game.h">
+      <Filter>헤더 파일\src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\input.h">
+      <Filter>헤더 파일\src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\log.h">
+      <Filter>헤더 파일\src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\map.h">
+      <Filter>헤더 파일\src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\render.h">
+      <Filter>헤더 파일\src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
