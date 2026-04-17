@@ -4,6 +4,74 @@
 #include "render.h"
 #include "systems/interaction.h"
 
+#include <string.h>
+
+static void Game_markTileDirty(Game* game, int x, int y) {
+    int i;
+
+    if (game->tileDirtyCount >= 8) {
+        return;
+    }
+
+    for (i = 0; i < game->tileDirtyCount; ++i) {
+        if (game->tileDirtyX[i] == x && game->tileDirtyY[i] == y) {
+            return;
+        }
+    }
+
+    game->tileDirtyX[game->tileDirtyCount] = x;
+    game->tileDirtyY[game->tileDirtyCount] = y;
+    ++game->tileDirtyCount;
+}
+
+static void Game_flushRender(Game* game) {
+    int i;
+
+    if (game->fieldDirty) {
+        Render_drawStaticMap(game);
+        Render_drawPlayer(game);
+    } else {
+        for (i = 0; i < game->tileDirtyCount; ++i) {
+            Render_redrawTile(game, game->tileDirtyX[i], game->tileDirtyY[i]);
+        }
+    }
+
+    if (game->uiDirty) {
+        Render_refreshUI(game);
+    }
+
+    if (game->logDirty) {
+        Render_refreshLog(game);
+    }
+
+    game->fieldDirty = 0;
+    game->uiDirty = 0;
+    game->logDirty = 0;
+    game->tileDirtyCount = 0;
+}
+
+static void Game_getFrontTileByDir(int x, int y, Direction dir, int* outX, int* outY) {
+    *outX = x;
+    *outY = y;
+
+    switch (dir) {
+    case DIR_UP:
+        --(*outY);
+        break;
+    case DIR_DOWN:
+        ++(*outY);
+        break;
+    case DIR_LEFT:
+        --(*outX);
+        break;
+    case DIR_RIGHT:
+        ++(*outX);
+        break;
+    default:
+        break;
+    }
+}
+
 static int Game_tryTransitionByBoundary(Game* game, const Map* currentMap, int nx, int ny) {
     if (nx < 0) {
         return Stage_tryMoveField(&game->stage, 0, -1, &game->player, &game->logSystem);
@@ -69,10 +137,41 @@ void Game_init(Game* game) {
 
     game->running = 1;
     Render_getConsoleSize(&game->prevCols, &game->prevRows);
+    game->uiDirty = 1;
+    game->logDirty = 1;
+    game->fieldDirty = 1;
+    game->tileDirtyCount = 0;
 }
 
 void Game_update(Game* game) {
+    LogSystem logBefore;
+    Player playerBefore;
+    int rowBefore = game->stage.currentRow;
+    int colBefore = game->stage.currentCol;
+    Map* mapBefore = Stage_getCurrentMap(&game->stage);
+    int interactX = 0;
+    int interactY = 0;
+    int interactTileBefore = TILE_EMPTY;
+    int canTrackInteractTile = 0;
     InputCommand cmd = Input_pollCommand();
+
+    playerBefore = game->player;
+    memcpy(&logBefore, &game->logSystem, sizeof(LogSystem));
+
+    if (cmd == INPUT_INTERACT) {
+        Game_getFrontTileByDir(
+            playerBefore.x,
+            playerBefore.y,
+            playerBefore.dir,
+            &interactX,
+            &interactY
+        );
+
+        if (Map_isInside(mapBefore, interactX, interactY)) {
+            interactTileBefore = Map_getTile(mapBefore, interactX, interactY);
+            canTrackInteractTile = 1;
+        }
+    }
 
     switch (cmd) {
     case INPUT_MOVE_UP:
@@ -96,12 +195,55 @@ void Game_update(Game* game) {
     default:
         break;
     }
+
+    if (rowBefore != game->stage.currentRow || colBefore != game->stage.currentCol) {
+        game->fieldDirty = 1;
+    } else {
+        if (playerBefore.x != game->player.x || playerBefore.y != game->player.y) {
+            Game_markTileDirty(game, playerBefore.x, playerBefore.y);
+            Game_markTileDirty(game, game->player.x, game->player.y);
+        }
+
+        if (canTrackInteractTile) {
+            Map* mapAfter = Stage_getCurrentMap(&game->stage);
+            int interactTileAfter = Map_getTile(mapAfter, interactX, interactY);
+            if (interactTileBefore != interactTileAfter) {
+                Game_markTileDirty(game, interactX, interactY);
+            }
+        }
+    }
+
+    if (playerBefore.hp != game->player.hp ||
+        playerBefore.bombCount != game->player.bombCount ||
+        playerBefore.keyCount != game->player.keyCount ||
+        playerBefore.dir != game->player.dir) {
+        game->uiDirty = 1;
+    }
+
+    if (memcmp(&logBefore, &game->logSystem, sizeof(LogSystem)) != 0) {
+        game->logDirty = 1;
+    }
 }
 
 void Game_run(Game* game) {
+    Game_flushRender(game);
+
     while (game->running) {
-        Render_handleResize(game);
-        Render_drawGame(game);
+        if (Render_handleResize(game)) {
+            game->fieldDirty = 1;
+        }
+
+        if (game->fieldDirty) {
+            game->uiDirty = 1;
+            game->logDirty = 1;
+            Game_flushRender(game);
+        }
+
         Game_update(game);
+        if (game->fieldDirty) {
+            game->uiDirty = 1;
+            game->logDirty = 1;
+        }
+        Game_flushRender(game);
     }
 }

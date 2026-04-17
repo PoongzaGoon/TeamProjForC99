@@ -26,18 +26,11 @@
 */
 void Render_initConsole(void);
 
-/*
-[Function]
-
-* 역할: 현재 게임 상태를 맵/UI/로그로 렌더링한다.
-
-* 입력: game - 렌더링 대상 게임 포인터
-
-* 출력: 콘솔 화면의 지정 영역이 최신 상태로 갱신
-
-* 주의: 전체 화면 cls 대신 필요한 영역만 갱신한다.
-*/
-void Render_drawGame(const Game* game);
+void Render_drawStaticMap(const Game* game);
+void Render_redrawTile(const Game* game, int x, int y);
+void Render_drawPlayer(const Game* game);
+void Render_refreshUI(const Game* game);
+void Render_refreshLog(const Game* game);
 
 /*
 [Function]
@@ -50,7 +43,7 @@ void Render_drawGame(const Game* game);
 
 * 주의: 동적 레이아웃 배치 충돌을 방지하기 위해 resize 시 정리한다.
 */
-void Render_handleResize(Game* game);
+int Render_handleResize(Game* game);
 
 /*
 [Function]
