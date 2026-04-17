@@ -272,6 +272,16 @@ const Map* Overworld_getCurrentMapConst(const Overworld* world) {
     return &world->fields[world->currentRow][world->currentCol];
 }
 
+/*
+[Function]
+
+* 역할: 필드 경계 이동을 월드 좌표 전환으로 확정하고, 도착 필드의 진입 위치를 일관 규칙으로 배치한다.
+* 호출 위치: Game_tryTransitionByBoundary, Overworld_tryMoveByFacing에서 필드 전환 시 호출된다.
+* 입력: world(현재 월드 좌표), dRow/dCol(이동할 필드 방향), player(재배치 대상), logSystem(이동 결과 기록).
+* 출력: 전환 성공 1/실패 0을 반환하고, 실패 시 월드 좌표를 유지한다.
+* 상태 변화: 성공 시 world->currentRow/currentCol과 player 위치가 함께 갱신되고 이동 로그가 추가된다.
+* 주의: 범위를 벗어난 전환은 즉시 거부해야 하며, 진입 좌표는 반드시 Overworld_placePlayerOnEntry 규칙을 따른다.
+*/
 int Overworld_tryMoveField(Overworld* world, int dRow, int dCol, Player* player, LogSystem* logSystem) {
     int nextRow = world->currentRow + dRow;
     int nextCol = world->currentCol + dCol;

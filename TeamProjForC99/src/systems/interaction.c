@@ -80,6 +80,16 @@ int Interaction_isDoorOpenForTransition(Game* game, int x, int y) {
     return Overworld_isDoorLinkOpened(&game->overworld, entity->doorData.linkId);
 }
 
+/*
+[Function]
+
+* 역할: 상호작용 입력의 분기점으로 전방 대상에 대해 Entity 우선, Tile 후순위 규칙을 강제한다.
+* 호출 위치: Game_update에서 INPUT_INTERACT 처리 시 호출된다. (구조상 Interaction_handle 역할)
+* 입력: game - 플레이어 방향/좌표와 맵·엔티티·로그 상태를 포함한 컨텍스트.
+* 출력: 반환값 없이 상호작용 결과가 로그 및 관련 상태에 반영된다.
+* 상태 변화: Door 상호작용 시 문 링크/열쇠가 바뀌고, Tile 상호작용 시 맵 타일과 인벤토리가 바뀔 수 있다.
+* 주의: 동일 좌표에서 Entity가 처리되면 Tile 처리는 건너뛰어 이중 처리와 규칙 충돌을 막는다.
+*/
 void Interaction_tryFront(Game* game) {
     int targetX;
     int targetY;

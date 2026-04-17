@@ -21,10 +21,12 @@ static const wchar_t* Door_render(const Entity* entity, const Game* game) {
 /*
 [Function]
 
-역할: Door Entity의 상호작용 규칙(열쇠 사용/잠김 안내/열림 안내)을 처리한다.
-입력: entity - 상호작용 대상 문 엔티티, game - 플레이어 및 로그 접근용 게임 상태
-출력: 문 상태(locked/opened), 플레이어 keyCount, 로그가 갱신된다.
-주의: 잠금/열림 상태는 DoorData가 아닌 Overworld doorLinks를 단일 소스로 사용한다.
+* 역할: 문 사용 규칙을 일원화해 플레이어 소비 자원(열쇠)과 월드 문 링크 상태를 연결한다.
+* 호출 위치: Interaction_tryFront → Entity_interactAtCurrentField 경로에서 문 타일 정면 상호작용 시 호출된다.
+* 입력: entity(대상 문의 linkId), game(플레이어 인벤토리·Overworld·로그 접근용 상태).
+* 출력: 항상 상호작용 처리됨(1)으로 반환하며 로그 메시지가 사용자 피드백으로 기록된다.
+* 상태 변화: 필요 시 player.keyCount가 감소하고 overworld.doorLinks[linkId]가 unlock/open 상태로 갱신된다.
+* 주의: 문 개폐 판정의 기준은 DoorData가 아니라 Overworld doorLinks이며, 연결되지 않은 문은 상태를 바꾸지 않는다.
 */
 static int Door_interact(Entity* entity, Game* game) {
     DoorData* door = &entity->doorData;
