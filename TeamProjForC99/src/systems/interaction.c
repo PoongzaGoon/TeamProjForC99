@@ -1,5 +1,6 @@
 #include "interaction.h"
 
+#include "../entity.h"
 #include "../log.h"
 #include "../map.h"
 #include "../overworld.h"
@@ -27,19 +28,16 @@ static void Interaction_getFrontTile(const Player* player, int* x, int* y) {
 }
 
 static int Interaction_tryEntity(Game* game, int x, int y) {
-    (void)game;
-    (void)x;
-    (void)y;
-    return 0;
+    return Entity_interactAtCurrentField(game, x, y);
 }
 
 /*
 [Function]
 
-* 역할: 플레이어 전방 타일 상호작용(열쇠, 문, 아이템)을 처리한다.
-* 입력: game - 게임 상태, x/y - 상호작용 타일 좌표
-* 출력: 현재 필드 타일 상태, 플레이어 keyCount/bombCount, 로그가 갱신된다.
-* 주의: 이동/전투 판정은 포함하지 않고 상호작용 규칙만 처리한다.
+역할: 플레이어 전방 타일 상호작용(열쇠, 폭탄, 벽 안내)을 처리한다.
+입력: game - 게임 상태, x/y - 상호작용 타일 좌표
+출력: 현재 필드 타일 상태, 플레이어 keyCount/bombCount, 로그가 갱신된다.
+주의: Door 상호작용은 Entity 단계에서 우선 처리하며 Tile 단계에서는 문 상태를 다루지 않는다.
 */
 static void Interaction_tryTile(Game* game, int x, int y) {
     Map* currentMap = Overworld_getCurrentMap(&game->overworld);
@@ -51,22 +49,6 @@ static void Interaction_tryTile(Game* game, int x, int y) {
         break;
     case TILE_EMPTY:
         Log_push(&game->logSystem, L"아무것도 없다.");
-        break;
-    case TILE_DOOR_LOCKED:
-        if (game->player.keyCount > 0) {
-            --game->player.keyCount;
-            Map_setTile(currentMap, x, y, TILE_DOOR_OPEN);
-            Log_push(&game->logSystem, L"열쇠를 사용해 문을 열었다.");
-        } else {
-            Log_push(&game->logSystem, L"열쇠가 필요하다.");
-        }
-        break;
-    case TILE_DOOR_OPEN:
-        if (Map_isBoundary(currentMap, x, y)) {
-            Overworld_tryMoveByFacing(&game->overworld, game->player.dir, &game->player, &game->logSystem);
-        } else {
-            Log_push(&game->logSystem, L"열린 문이다.");
-        }
         break;
     case TILE_BOMB:
         Map_setTile(currentMap, x, y, TILE_EMPTY);
@@ -82,6 +64,20 @@ static void Interaction_tryTile(Game* game, int x, int y) {
         Log_push(&game->logSystem, L"아무 반응이 없다.");
         break;
     }
+}
+
+int Interaction_isEntityBlockingAtFront(Game* game, int x, int y) {
+    return Entity_isBlockedAtCurrentField(game, x, y);
+}
+
+int Interaction_isDoorOpenForTransition(Game* game, int x, int y) {
+    Entity* entity = Entity_findAtCurrentField(game, x, y);
+
+    if (!entity || entity->type != ENTITY_TYPE_DOOR) {
+        return 0;
+    }
+
+    return entity->doorData.opened;
 }
 
 void Interaction_tryFront(Game* game) {

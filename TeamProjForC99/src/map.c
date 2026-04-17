@@ -47,7 +47,7 @@ void Map_setTile(Map* map, int x, int y, int tile) {
 
 int Map_isBlocked(const Map* map, int x, int y) {
     int tile = Map_getTile(map, x, y);
-    return tile == TILE_WALL || tile == TILE_DOOR_LOCKED;
+    return tile == TILE_WALL;
 }
 
 int Map_isInside(const Map* map, int x, int y) {

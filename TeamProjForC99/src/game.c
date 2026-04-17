@@ -1,5 +1,6 @@
 #include "game.h"
 
+#include "entity.h"
 #include "input.h"
 #include "render.h"
 #include "systems/interaction.h"
@@ -92,7 +93,6 @@ static void Game_movePlayer(Game* game, int dx, int dy, Direction dir) {
     Map* currentMap = Overworld_getCurrentMap(&game->overworld);
     int nx;
     int ny;
-    int tile;
 
     game->player.dir = dir;
     nx = game->player.x + dx;
@@ -105,14 +105,13 @@ static void Game_movePlayer(Game* game, int dx, int dy, Direction dir) {
         return;
     }
 
-    tile = Map_getTile(currentMap, nx, ny);
-    if (tile == TILE_DOOR_OPEN && Map_isBoundary(currentMap, nx, ny)) {
+    if (Interaction_isDoorOpenForTransition(game, nx, ny) && Map_isBoundary(currentMap, nx, ny)) {
         if (Overworld_tryMoveByFacing(&game->overworld, game->player.dir, &game->player, &game->logSystem)) {
             return;
         }
     }
 
-    if (Map_isBlocked(currentMap, nx, ny)) {
+    if (Map_isBlocked(currentMap, nx, ny) || Interaction_isEntityBlockingAtFront(game, nx, ny)) {
         Log_push(&game->logSystem, L"벽 또는 잠긴 문이라 이동할 수 없다.");
         return;
     }
@@ -134,6 +133,9 @@ void Game_init(Game* game) {
 
     Log_init(&game->logSystem);
     Log_push(&game->logSystem, L"스테이지를 시작한다.");
+
+    game->entityCount = 0;
+    Entity_buildFromSpawns(game);
 
     game->running = 1;
     Render_getConsoleSize(&game->prevCols, &game->prevRows);
@@ -170,6 +172,7 @@ void Game_update(Game* game) {
         if (Map_isInside(mapBefore, interactX, interactY)) {
             interactTileBefore = Map_getTile(mapBefore, interactX, interactY);
             canTrackInteractTile = 1;
+            Game_markTileDirty(game, interactX, interactY);
         }
     }
 

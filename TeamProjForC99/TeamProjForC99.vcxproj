@@ -129,6 +129,9 @@
     <ClCompile Include="src\log.c" />
     <ClCompile Include="src\main.c" />
     <ClCompile Include="src\map.c" />
+    <ClCompile Include="src\entity.c" />
+    <ClCompile Include="src\entities\door.c" />
+    <ClCompile Include="src\field_spawns.c" />
     <ClCompile Include="src\overworld.c" />
     <ClCompile Include="src\fields\field1.c" />
     <ClCompile Include="src\fields\field2.c" />
@@ -147,6 +150,10 @@
     <ClInclude Include="src\input.h" />
     <ClInclude Include="src\log.h" />
     <ClInclude Include="src\map.h" />
+    <ClInclude Include="src\entity.h" />
+    <ClInclude Include="src\entities\door.h" />
+    <ClInclude Include="src\field_spawns.h" />
+    <ClInclude Include="src\spawn.h" />
     <ClInclude Include="src\overworld.h" />
     <ClInclude Include="src\fields\field1.h" />
     <ClInclude Include="src\fields\field2.h" />
