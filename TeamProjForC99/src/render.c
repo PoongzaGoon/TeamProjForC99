@@ -2,6 +2,8 @@
 
 #include "render.h"
 
+#include "entity.h"
+
 #include <stdio.h>
 #include <wchar.h>
 #include <windows.h>
@@ -93,7 +95,12 @@ void Render_drawStaticMap(const Game* game) {
     for (y = 0; y < currentMap->height; ++y) {
         Render_gotoXY(MAP_ORIGIN_X, MAP_ORIGIN_Y + y);
         for (x = 0; x < currentMap->width; ++x) {
-            Render_printW(Render_tileToEmoji(Map_getTile(currentMap, x, y)));
+            const wchar_t* entityGlyph = Entity_renderAtCurrentField(game, x, y);
+            if (entityGlyph) {
+                Render_printW(entityGlyph);
+            } else {
+                Render_printW(Render_tileToEmoji(Map_getTile(currentMap, x, y)));
+            }
         }
     }
 }
@@ -114,7 +121,12 @@ void Render_redrawTile(const Game* game, int x, int y) {
     if (game->player.x == x && game->player.y == y) {
         Render_printW(L"🧙");
     } else {
-        Render_printW(Render_tileToEmoji(Map_getTile(currentMap, x, y)));
+        const wchar_t* entityGlyph = Entity_renderAtCurrentField(game, x, y);
+        if (entityGlyph) {
+            Render_printW(entityGlyph);
+        } else {
+            Render_printW(Render_tileToEmoji(Map_getTile(currentMap, x, y)));
+        }
     }
 }
 

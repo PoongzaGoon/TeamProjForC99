@@ -21,8 +21,14 @@
     <Filter Include="소스 파일\src\systems">
       <UniqueIdentifier>{8f349f79-2971-47e4-adf7-a4b7af4ef0a1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\src\entities">
+      <UniqueIdentifier>{b8f34979-2971-47e4-adf7-a4b7af4ef0a1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="헤더 파일\src\systems">
       <UniqueIdentifier>{95e6f239-1d63-495e-a1c1-5f80562d8d65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\src\entities">
+      <UniqueIdentifier>{c8f34979-2971-47e4-adf7-a4b7af4ef0a1}</UniqueIdentifier>
     </Filter>
     <Filter Include="소스 파일\src\fields">
       <UniqueIdentifier>{7f6b6e7e-6cbe-43fc-8bf1-a250667f78d1}</UniqueIdentifier>
@@ -48,6 +54,15 @@
       <Filter>소스 파일\src</Filter>
     </ClCompile>
     <ClCompile Include="src\map.c">
+      <Filter>소스 파일\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity.c">
+      <Filter>소스 파일\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entities\door.c">
+      <Filter>소스 파일\src\entities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\field_spawns.c">
       <Filter>소스 파일\src</Filter>
     </ClCompile>
     <ClCompile Include="src\overworld.c">
@@ -98,6 +113,18 @@
       <Filter>헤더 파일\src</Filter>
     </ClInclude>
     <ClInclude Include="src\map.h">
+      <Filter>헤더 파일\src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity.h">
+      <Filter>헤더 파일\src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entities\door.h">
+      <Filter>헤더 파일\src\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\field_spawns.h">
+      <Filter>헤더 파일\src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\spawn.h">
       <Filter>헤더 파일\src</Filter>
     </ClInclude>
     <ClInclude Include="src\overworld.h">
