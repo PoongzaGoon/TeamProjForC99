@@ -1,0 +1,24 @@
+#ifndef OVERWORLD_H
+#define OVERWORLD_H
+
+#include "log.h"
+#include "map.h"
+
+#define OVERWORLD_ROWS 3
+#define OVERWORLD_COLS 3
+
+typedef struct Player Player;
+
+typedef struct Overworld {
+    Map fields[OVERWORLD_ROWS][OVERWORLD_COLS];
+    int currentRow;
+    int currentCol;
+} Overworld;
+
+void Overworld_init(Overworld* world);
+Map* Overworld_getCurrentMap(Overworld* world);
+const Map* Overworld_getCurrentMapConst(const Overworld* world);
+int Overworld_tryMoveField(Overworld* world, int dRow, int dCol, Player* player, LogSystem* logSystem);
+int Overworld_tryMoveByFacing(Overworld* world, int dir, Player* player, LogSystem* logSystem);
+
+#endif

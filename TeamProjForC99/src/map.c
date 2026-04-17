@@ -1,6 +1,6 @@
 #include "map.h"
 
-void Map_loadFromArray(Map* map, int width, int height, FieldType fieldType, const int src[][MAP_W]) {
+void Map_loadFromArray(Map* map, int width, int height, const int src[][MAP_W]) {
     int y;
     int x;
 
@@ -19,7 +19,6 @@ void Map_loadFromArray(Map* map, int width, int height, FieldType fieldType, con
 
     map->width = width;
     map->height = height;
-    map->fieldType = fieldType;
 
     for (y = 0; y < MAP_H; ++y) {
         for (x = 0; x < MAP_W; ++x) {
