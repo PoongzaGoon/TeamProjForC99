@@ -119,6 +119,17 @@ static void Game_movePlayer(Game* game, int dx, int dy, Direction dir) {
         return;
     }
 
+    if (BombSystem_hasBombAt(
+        &game->bombSystem,
+        game->overworld.currentRow,
+        game->overworld.currentCol,
+        nx,
+        ny
+    )) {
+        Log_push(&game->logSystem, L"설치된 폭탄이 있어 이동할 수 없다.");
+        return;
+    }
+
     game->player.x = nx;
     game->player.y = ny;
     Log_push(&game->logSystem, L"플레이어가 이동했다.");
@@ -204,7 +215,14 @@ void Game_update(Game* game) {
         break;
     case INPUT_PLACE_BOMB:
         if (BombSystem_tryPlaceFront(&game->bombSystem, game)) {
-            Game_markTileDirty(game, game->player.x, game->player.y);
+            Game_getFrontTileByDir(
+                playerBefore.x,
+                playerBefore.y,
+                playerBefore.dir,
+                &interactX,
+                &interactY
+            );
+            Game_markTileDirty(game, interactX, interactY);
         }
         break;
     case INPUT_QUIT:
