@@ -2,8 +2,15 @@
 #define SYSTEMS_BOMB_H
 
 #include <windows.h>
+#include <wchar.h>
 
 #define MAX_BOMBS 32
+
+typedef enum BombState {
+    BOMB_PLANTED = 0,
+    BOMB_EXPLODING = 1,
+    BOMB_DONE = 2
+} BombState;
 
 typedef struct BombInstance {
     int active;
@@ -13,7 +20,7 @@ typedef struct BombInstance {
     int y;
     DWORD placedTime;
     DWORD effectStartTime;
-    int exploded;
+    BombState state;
     int delayMs;
     int effectMs;
 } BombInstance;
@@ -56,5 +63,12 @@ int BombSystem_update(BombSystem* bombSystem, struct Game* game);
 
 int BombSystem_hasBombAt(const BombSystem* bombSystem, int fieldRow, int fieldCol, int x, int y);
 int BombSystem_hasEffectAt(const BombSystem* bombSystem, int fieldRow, int fieldCol, int x, int y);
+const wchar_t* BombSystem_getRenderGlyphAt(
+    const BombSystem* bombSystem,
+    int fieldRow,
+    int fieldCol,
+    int x,
+    int y
+);
 
 #endif

@@ -113,7 +113,7 @@ int BombSystem_tryPlaceFront(BombSystem* bombSystem, Game* game) {
         bomb->y = targetY;
         bomb->placedTime = GetTickCount();
         bomb->effectStartTime = 0;
-        bomb->exploded = 0;
+        bomb->state = BOMB_PLANTED;
         bomb->delayMs = 3000;
         bomb->effectMs = 500;
 
@@ -126,6 +126,14 @@ int BombSystem_tryPlaceFront(BombSystem* bombSystem, Game* game) {
     return 0;
 }
 
+/*
+[Function]
+
+* 역할: 폭탄의 설치/폭발/종료 상태를 시간 기준으로 전이한다.
+* 입력: bombSystem - 폭탄 배열, game - 플레이어/로그 반영 대상 게임 상태
+* 출력: 상태 전이가 발생하면 1, 변화가 없으면 0
+* 주의: 렌더링 판단은 하지 않고 상태/피해/로그만 갱신한다.
+*/
 int BombSystem_update(BombSystem* bombSystem, Game* game) {
     int changed = 0;
     int i;
@@ -138,11 +146,12 @@ int BombSystem_update(BombSystem* bombSystem, Game* game) {
             continue;
         }
 
-        if (!bomb->exploded) {
+        if (bomb->state == BOMB_PLANTED) {
             if ((DWORD)(now - bomb->placedTime) >= (DWORD)bomb->delayMs) {
-                bomb->exploded = 1;
+                bomb->state = BOMB_EXPLODING;
                 bomb->effectStartTime = now;
                 changed = 1;
+                Log_push(&game->logSystem, L"폭발이 발생했다.");
 
                 if (BombSystem_isPlayerInBlast(
                     bomb,
@@ -156,8 +165,9 @@ int BombSystem_update(BombSystem* bombSystem, Game* game) {
                     Log_push(&game->logSystem, L"폭발에 휘말렸다.");
                 }
             }
-        } else {
+        } else if (bomb->state == BOMB_EXPLODING) {
             if ((DWORD)(now - bomb->effectStartTime) >= (DWORD)bomb->effectMs) {
+                bomb->state = BOMB_DONE;
                 bomb->active = 0;
                 changed = 1;
             }
@@ -172,7 +182,7 @@ int BombSystem_hasBombAt(const BombSystem* bombSystem, int fieldRow, int fieldCo
 
     for (i = 0; i < MAX_BOMBS; ++i) {
         const BombInstance* bomb = &bombSystem->bombs[i];
-        if (!bomb->active || bomb->exploded) {
+        if (!bomb->active || bomb->state != BOMB_PLANTED) {
             continue;
         }
         if (bomb->fieldRow == fieldRow && bomb->fieldCol == fieldCol && bomb->x == x && bomb->y == y) {
@@ -196,7 +206,7 @@ int BombSystem_hasEffectAt(const BombSystem* bombSystem, int fieldRow, int field
 
     for (i = 0; i < MAX_BOMBS; ++i) {
         const BombInstance* bomb = &bombSystem->bombs[i];
-        if (!bomb->active || !bomb->exploded) {
+        if (!bomb->active || bomb->state != BOMB_EXPLODING) {
             continue;
         }
         if (bomb->fieldRow != fieldRow || bomb->fieldCol != fieldCol) {
@@ -211,4 +221,28 @@ int BombSystem_hasEffectAt(const BombSystem* bombSystem, int fieldRow, int field
     }
 
     return 0;
+}
+
+/*
+[Function]
+
+* 역할: 지정 좌표에서 폭탄 상태에 맞는 출력 글리프를 조회한다.
+* 입력: bombSystem - 폭탄 배열, fieldRow/fieldCol/x/y - 렌더 대상 좌표
+* 출력: 출력할 이모지 문자열(없으면 NULL)
+* 주의: 상태 전이/시간 계산은 하지 않고 읽기 전용으로만 동작한다.
+*/
+const wchar_t* BombSystem_getRenderGlyphAt(
+    const BombSystem* bombSystem,
+    int fieldRow,
+    int fieldCol,
+    int x,
+    int y
+) {
+    if (BombSystem_hasEffectAt(bombSystem, fieldRow, fieldCol, x, y)) {
+        return L"💥";
+    }
+    if (BombSystem_hasBombAt(bombSystem, fieldRow, fieldCol, x, y)) {
+        return L"💣";
+    }
+    return NULL;
 }

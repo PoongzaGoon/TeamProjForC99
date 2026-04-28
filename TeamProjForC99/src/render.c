@@ -84,6 +84,38 @@ static const wchar_t* Render_dirToText(Direction dir) {
     }
 }
 
+/*
+[Function]
+
+* 역할: 단일 타일에 대해 타일→엔티티→폭탄 순서의 기본 레이어를 출력한다.
+* 입력: game - 게임 상태, x/y - 현재 필드 좌표
+* 출력: 해당 좌표의 배경/엔티티/폭탄 레이어가 콘솔에 그려진다.
+* 주의: 플레이어 레이어는 처리하지 않으며 상태 변경 로직을 수행하지 않는다.
+*/
+static void Render_drawBaseLayersAt(const Game* game, int x, int y) {
+    const Map* currentMap = Overworld_getCurrentMapConst(&game->overworld);
+    const wchar_t* entityGlyph = Entity_renderAtCurrentField(game, x, y);
+    const wchar_t* bombGlyph = BombSystem_getRenderGlyphAt(
+        &game->bombSystem,
+        game->overworld.currentRow,
+        game->overworld.currentCol,
+        x,
+        y
+    );
+
+    Render_printW(Render_tileToEmoji(Map_getTile(currentMap, x, y)));
+
+    if (entityGlyph) {
+        Render_gotoXY(MAP_ORIGIN_X + (x * TILE_DRAW_W), MAP_ORIGIN_Y + y);
+        Render_printW(entityGlyph);
+    }
+
+    if (bombGlyph) {
+        Render_gotoXY(MAP_ORIGIN_X + (x * TILE_DRAW_W), MAP_ORIGIN_Y + y);
+        Render_printW(bombGlyph);
+    }
+}
+
 void Render_drawStaticMap(const Game* game) {
     const Map* currentMap = Overworld_getCurrentMapConst(&game->overworld);
     int x;
@@ -94,16 +126,7 @@ void Render_drawStaticMap(const Game* game) {
     for (y = 0; y < currentMap->height; ++y) {
         Render_gotoXY(MAP_ORIGIN_X, MAP_ORIGIN_Y + y);
         for (x = 0; x < currentMap->width; ++x) {
-            const wchar_t* entityGlyph = Entity_renderAtCurrentField(game, x, y);
-            if (BombSystem_hasEffectAt(&game->bombSystem, game->overworld.currentRow, game->overworld.currentCol, x, y)) {
-                Render_printW(L"💥");
-            } else if (BombSystem_hasBombAt(&game->bombSystem, game->overworld.currentRow, game->overworld.currentCol, x, y)) {
-                Render_printW(L"💣");
-            } else if (entityGlyph) {
-                Render_printW(entityGlyph);
-            } else {
-                Render_printW(Render_tileToEmoji(Map_getTile(currentMap, x, y)));
-            }
+            Render_drawBaseLayersAt(game, x, y);
         }
     }
 }
@@ -121,35 +144,17 @@ void Render_redrawTile(const Game* game, int x, int y) {
     drawY = MAP_ORIGIN_Y + y;
     Render_gotoXY(drawX, drawY);
 
-    if (BombSystem_hasEffectAt(&game->bombSystem, game->overworld.currentRow, game->overworld.currentCol, x, y)) {
-        Render_printW(L"💥");
-    } else if (game->player.x == x && game->player.y == y) {
+    Render_drawBaseLayersAt(game, x, y);
+
+    if (game->player.x == x && game->player.y == y) {
+        Render_gotoXY(drawX, drawY);
         Render_printW(L"🧙");
-    } else if (BombSystem_hasBombAt(&game->bombSystem, game->overworld.currentRow, game->overworld.currentCol, x, y)) {
-        Render_printW(L"💣");
-    } else {
-        const wchar_t* entityGlyph = Entity_renderAtCurrentField(game, x, y);
-        if (entityGlyph) {
-            Render_printW(entityGlyph);
-        } else {
-            Render_printW(Render_tileToEmoji(Map_getTile(currentMap, x, y)));
-        }
     }
 }
 
 void Render_drawPlayer(const Game* game) {
     int drawX = MAP_ORIGIN_X + (game->player.x * TILE_DRAW_W);
     int drawY = MAP_ORIGIN_Y + game->player.y;
-
-    if (BombSystem_hasEffectAt(
-        &game->bombSystem,
-        game->overworld.currentRow,
-        game->overworld.currentCol,
-        game->player.x,
-        game->player.y
-    )) {
-        return;
-    }
 
     Render_printAt(drawX, drawY, L"🧙");
 }
