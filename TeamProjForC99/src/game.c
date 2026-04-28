@@ -128,8 +128,10 @@ void Game_init(Game* game) {
     game->player.y = 2;
     game->player.dir = DIR_RIGHT;
     game->player.hp = 3;
+    game->player.maxHp = 5;
     game->player.bombCount = 0;
     game->player.keyCount = 0;
+    game->player.potionCount = 0;
 
     Log_init(&game->logSystem);
     Overworld_validateDoorTransitions(&game->overworld, &game->logSystem);
@@ -220,6 +222,7 @@ void Game_update(Game* game) {
     if (playerBefore.hp != game->player.hp ||
         playerBefore.bombCount != game->player.bombCount ||
         playerBefore.keyCount != game->player.keyCount ||
+        playerBefore.potionCount != game->player.potionCount ||
         playerBefore.dir != game->player.dir) {
         game->uiDirty = 1;
     }

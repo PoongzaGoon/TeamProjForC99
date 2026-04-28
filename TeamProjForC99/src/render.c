@@ -69,8 +69,6 @@ static const wchar_t* Render_tileToEmoji(int tile) {
     case TILE_WALL: return L"🧱";
     case TILE_DOOR_LOCKED: return L"🚪";
     case TILE_DOOR_OPEN: return L"⭐";
-    case TILE_BOMB: return L"💣";
-    case TILE_KEY_ITEM: return L"🔑";
     default: return L"  ";
     }
 }
@@ -145,7 +143,7 @@ void Render_refreshUI(const Game* game) {
     Render_clearRect(uiX, uiY, UI_BOX_W, UI_BOX_H);
     Render_printAt(uiX, uiY + 0, L"===== UI =====");
 
-    swprintf(buffer, 64, L"HP: %d", game->player.hp);
+    swprintf(buffer, 64, L"HP: %d/%d", game->player.hp, game->player.maxHp);
     Render_printAt(uiX, uiY + 2, buffer);
 
     swprintf(buffer, 64, L"폭탄: 💣 x%d", game->player.bombCount);
@@ -154,17 +152,19 @@ void Render_refreshUI(const Game* game) {
     swprintf(buffer, 64, L"열쇠: 🔑 x%d", game->player.keyCount);
     Render_printAt(uiX, uiY + 6, buffer);
 
-    swprintf(buffer, 64, L"방향: %ls", Render_dirToText(game->player.dir));
+    swprintf(buffer, 64, L"포션: 🧪 x%d (즉시 회복)", game->player.potionCount);
     Render_printAt(uiX, uiY + 7, buffer);
+
+    swprintf(buffer, 64, L"방향: %ls", Render_dirToText(game->player.dir));
+    Render_printAt(uiX, uiY + 8, buffer);
 
     swprintf(buffer, 64, L"필드 좌표: (%d,%d)",
         game->overworld.currentRow,
         game->overworld.currentCol);
-    Render_printAt(uiX, uiY + 8, buffer);
+    Render_printAt(uiX, uiY + 9, buffer);
 
-    Render_printAt(uiX, uiY + 9, L"이동: 방향키");
-    Render_printAt(uiX, uiY + 10, L"조사: E");
-    Render_printAt(uiX, uiY + 11, L"종료: Q");
+    Render_printAt(uiX, uiY + 10, L"이동: 방향키");
+    Render_printAt(uiX, uiY + 11, L"조사: E / 종료: Q");
 }
 
 void Render_refreshLog(const Game* game) {
