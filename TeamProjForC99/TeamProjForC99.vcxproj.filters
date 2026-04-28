@@ -101,7 +101,13 @@
     <ClCompile Include="src\fields\field9.c">
       <Filter>소스 파일\src\fields</Filter>
     </ClCompile>
+    <ClCompile Include="src\systems\bomb.c">
+      <Filter>소스 파일\src\systems</Filter>
+    </ClCompile>
     <ClCompile Include="src\systems\interaction.c">
+      <Filter>소스 파일\src\systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\systems\item_actions.c">
       <Filter>소스 파일\src\systems</Filter>
     </ClCompile>
   </ItemGroup>
@@ -166,7 +172,13 @@
     <ClInclude Include="src\fields\field9.h">
       <Filter>헤더 파일\src\fields</Filter>
     </ClInclude>
+    <ClInclude Include="src\systems\bomb.h">
+      <Filter>헤더 파일\src\systems</Filter>
+    </ClInclude>
     <ClInclude Include="src\systems\interaction.h">
+      <Filter>헤더 파일\src\systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\systems\item_actions.h">
       <Filter>헤더 파일\src\systems</Filter>
     </ClInclude>
   </ItemGroup>

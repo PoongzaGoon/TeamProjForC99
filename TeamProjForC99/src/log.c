@@ -23,6 +23,6 @@ void Log_init(LogSystem* logSystem) {
 
     Log_push(logSystem, L"게임 스타트!");
     Log_push(logSystem, L"방향키: 이동");
-    Log_push(logSystem, L"E: 조사");
-    Log_push(logSystem, L"Q: 종료");
+    Log_push(logSystem, L"E: 조사 / H: 포션");
+    Log_push(logSystem, L"B: 폭탄 / Q: 종료");
 }

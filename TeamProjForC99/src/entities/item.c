@@ -26,10 +26,10 @@ static const wchar_t* Item_render(const Entity* entity, const Game* game) {
 
 /*
 [Function]
-- 역할: Item Entity 상호작용 결과를 플레이어 상태(열쇠/폭탄/HP)에 반영하고 아이템을 비활성화한다.
-- 입력: entity - 상호작용된 Item Entity, game - 플레이어/로그를 포함한 게임 상태.
-- 출력: 아이템 상호작용을 처리했음을 의미하는 1을 반환한다.
-- 주의: 포션은 즉시 회복형으로 처리하며 HP는 maxHp를 넘지 않도록 clamp한다.
+* 역할: Item Entity 획득 결과를 플레이어 인벤토리(열쇠/폭탄/포션)에 반영한다.
+* 입력: entity - 상호작용된 Item Entity, game - 플레이어/로그를 포함한 게임 상태
+* 출력: 아이템 처리 완료 시 1 반환
+* 주의: 포션은 즉시 사용하지 않고 potionCount만 증가시킨다.
 */
 static int Item_interact(Entity* entity, Game* game) {
     ItemData* item = &entity->itemData;
@@ -48,12 +48,8 @@ static int Item_interact(Entity* entity, Game* game) {
         Log_push(&game->logSystem, L"폭탄을 획득했다.");
         break;
     case ITEM_POTION:
-        game->player.hp += item->amount;
-        if (game->player.hp > game->player.maxHp) {
-            game->player.hp = game->player.maxHp;
-        }
-        ++game->player.potionCount;
-        Log_push(&game->logSystem, L"회복 포션을 사용했다.");
+        game->player.potionCount += item->amount;
+        Log_push(&game->logSystem, L"회복 포션을 획득했다.");
         break;
     default:
         Log_push(&game->logSystem, L"아무 반응이 없다.");
