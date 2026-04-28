@@ -144,7 +144,9 @@
     <ClCompile Include="src\fields\field8.c" />
     <ClCompile Include="src\fields\field9.c" />
     <ClCompile Include="src\render.c" />
+    <ClCompile Include="src\systems\bomb.c" />
     <ClCompile Include="src\systems\interaction.c" />
+    <ClCompile Include="src\systems\item_actions.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game.h" />
@@ -167,7 +169,9 @@
     <ClInclude Include="src\fields\field8.h" />
     <ClInclude Include="src\fields\field9.h" />
     <ClInclude Include="src\render.h" />
+    <ClInclude Include="src\systems\bomb.h" />
     <ClInclude Include="src\systems\interaction.h" />
+    <ClInclude Include="src\systems\item_actions.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

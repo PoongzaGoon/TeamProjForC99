@@ -4,8 +4,11 @@
 #include "input.h"
 #include "render.h"
 #include "systems/interaction.h"
+#include "systems/item_actions.h"
+#include "systems/bomb.h"
 
 #include <string.h>
+#include <windows.h>
 
 static void Game_markTileDirty(Game* game, int x, int y) {
     int i;
@@ -129,7 +132,7 @@ void Game_init(Game* game) {
     game->player.dir = DIR_RIGHT;
     game->player.hp = 3;
     game->player.maxHp = 5;
-    game->player.bombCount = 0;
+    game->player.bombCount = 1;
     game->player.keyCount = 0;
     game->player.potionCount = 0;
 
@@ -139,6 +142,7 @@ void Game_init(Game* game) {
 
     game->entityCount = 0;
     Entity_buildFromSpawns(game);
+    BombSystem_init(&game->bombSystem);
 
     game->running = 1;
     Render_getConsoleSize(&game->prevCols, &game->prevRows);
@@ -195,11 +199,23 @@ void Game_update(Game* game) {
     case INPUT_INTERACT:
         Interaction_tryFront(game);
         break;
+    case INPUT_USE_POTION:
+        ItemActions_tryUsePotion(game);
+        break;
+    case INPUT_PLACE_BOMB:
+        if (BombSystem_tryPlaceFront(&game->bombSystem, game)) {
+            Game_markTileDirty(game, game->player.x, game->player.y);
+        }
+        break;
     case INPUT_QUIT:
         game->running = 0;
         break;
     default:
         break;
+    }
+
+    if (BombSystem_update(&game->bombSystem, game)) {
+        game->fieldDirty = 1;
     }
 
     if (rowBefore != game->overworld.currentRow || colBefore != game->overworld.currentCol) {
@@ -223,6 +239,7 @@ void Game_update(Game* game) {
         playerBefore.bombCount != game->player.bombCount ||
         playerBefore.keyCount != game->player.keyCount ||
         playerBefore.potionCount != game->player.potionCount ||
+        playerBefore.maxHp != game->player.maxHp ||
         playerBefore.dir != game->player.dir) {
         game->uiDirty = 1;
     }
@@ -252,5 +269,6 @@ void Game_run(Game* game) {
             game->logDirty = 1;
         }
         Game_flushRender(game);
+        Sleep(16);
     }
 }

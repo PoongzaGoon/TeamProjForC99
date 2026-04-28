@@ -8,6 +8,8 @@ typedef enum InputCommand {
     INPUT_MOVE_LEFT,
     INPUT_MOVE_RIGHT,
     INPUT_INTERACT,
+    INPUT_USE_POTION,
+    INPUT_PLACE_BOMB,
     INPUT_QUIT
 } InputCommand;
 

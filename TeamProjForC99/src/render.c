@@ -3,6 +3,7 @@
 #include "render.h"
 
 #include "entity.h"
+#include "systems/bomb.h"
 
 #include <stdio.h>
 #include <wchar.h>
@@ -94,7 +95,11 @@ void Render_drawStaticMap(const Game* game) {
         Render_gotoXY(MAP_ORIGIN_X, MAP_ORIGIN_Y + y);
         for (x = 0; x < currentMap->width; ++x) {
             const wchar_t* entityGlyph = Entity_renderAtCurrentField(game, x, y);
-            if (entityGlyph) {
+            if (BombSystem_hasEffectAt(&game->bombSystem, game->overworld.currentRow, game->overworld.currentCol, x, y)) {
+                Render_printW(L"💥");
+            } else if (BombSystem_hasBombAt(&game->bombSystem, game->overworld.currentRow, game->overworld.currentCol, x, y)) {
+                Render_printW(L"💣");
+            } else if (entityGlyph) {
                 Render_printW(entityGlyph);
             } else {
                 Render_printW(Render_tileToEmoji(Map_getTile(currentMap, x, y)));
@@ -116,8 +121,12 @@ void Render_redrawTile(const Game* game, int x, int y) {
     drawY = MAP_ORIGIN_Y + y;
     Render_gotoXY(drawX, drawY);
 
-    if (game->player.x == x && game->player.y == y) {
+    if (BombSystem_hasEffectAt(&game->bombSystem, game->overworld.currentRow, game->overworld.currentCol, x, y)) {
+        Render_printW(L"💥");
+    } else if (game->player.x == x && game->player.y == y) {
         Render_printW(L"🧙");
+    } else if (BombSystem_hasBombAt(&game->bombSystem, game->overworld.currentRow, game->overworld.currentCol, x, y)) {
+        Render_printW(L"💣");
     } else {
         const wchar_t* entityGlyph = Entity_renderAtCurrentField(game, x, y);
         if (entityGlyph) {
@@ -131,6 +140,17 @@ void Render_redrawTile(const Game* game, int x, int y) {
 void Render_drawPlayer(const Game* game) {
     int drawX = MAP_ORIGIN_X + (game->player.x * TILE_DRAW_W);
     int drawY = MAP_ORIGIN_Y + game->player.y;
+
+    if (BombSystem_hasEffectAt(
+        &game->bombSystem,
+        game->overworld.currentRow,
+        game->overworld.currentCol,
+        game->player.x,
+        game->player.y
+    )) {
+        return;
+    }
+
     Render_printAt(drawX, drawY, L"🧙");
 }
 
@@ -152,7 +172,7 @@ void Render_refreshUI(const Game* game) {
     swprintf(buffer, 64, L"열쇠: 🔑 x%d", game->player.keyCount);
     Render_printAt(uiX, uiY + 6, buffer);
 
-    swprintf(buffer, 64, L"포션: 🧪 x%d (즉시 회복)", game->player.potionCount);
+    swprintf(buffer, 64, L"포션: 🧪 x%d", game->player.potionCount);
     Render_printAt(uiX, uiY + 7, buffer);
 
     swprintf(buffer, 64, L"방향: %ls", Render_dirToText(game->player.dir));
@@ -163,8 +183,8 @@ void Render_refreshUI(const Game* game) {
         game->overworld.currentCol);
     Render_printAt(uiX, uiY + 9, buffer);
 
-    Render_printAt(uiX, uiY + 10, L"이동: 방향키");
-    Render_printAt(uiX, uiY + 11, L"조사: E / 종료: Q");
+    Render_printAt(uiX, uiY + 10, L"이동: 방향키 / 조사: E");
+    Render_printAt(uiX, uiY + 11, L"H:포션 B:폭탄 Q:종료");
 }
 
 void Render_refreshLog(const Game* game) {

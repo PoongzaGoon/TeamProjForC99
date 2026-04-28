@@ -4,6 +4,7 @@
 #include "log.h"
 #include "overworld.h"
 #include "entity.h"
+#include "systems/bomb.h"
 
 typedef enum Direction {
     DIR_UP,
@@ -29,6 +30,7 @@ typedef struct Game {
     LogSystem logSystem;
     Entity entities[MAX_ENTITIES];
     int entityCount;
+    BombSystem bombSystem;
     int running;
     int prevCols;
     int prevRows;
