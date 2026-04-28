@@ -4,12 +4,14 @@
 #include <wchar.h>
 
 #include "entities/door.h"
+#include "entities/item.h"
 
 #define MAX_ENTITIES 256
 
 typedef enum EntityType {
     ENTITY_TYPE_NONE = 0,
-    ENTITY_TYPE_DOOR = 1
+    ENTITY_TYPE_DOOR = 1,
+    ENTITY_TYPE_ITEM = 2
 } EntityType;
 
 struct Game;
@@ -31,6 +33,7 @@ typedef struct Entity {
     int x;
     int y;
     DoorData doorData;
+    ItemData itemData;
     const EntityVTable* vtable;
 } Entity;
 

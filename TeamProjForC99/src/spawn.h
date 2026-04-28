@@ -4,7 +4,9 @@
 typedef enum SpawnType {
     SPAWN_NONE = 0,
     SPAWN_DOOR = 1,
-    SPAWN_KEY = 2
+    SPAWN_KEY = 2,
+    SPAWN_BOMB = 3,
+    SPAWN_POTION = 4
 } SpawnType;
 
 typedef struct SpawnData {

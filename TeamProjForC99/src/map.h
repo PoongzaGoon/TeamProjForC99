@@ -8,9 +8,7 @@ typedef enum TileType {
     TILE_EMPTY = 0,
     TILE_WALL = 1,
     TILE_DOOR_LOCKED = 2,
-    TILE_DOOR_OPEN = 3,
-    TILE_BOMB = 4,
-    TILE_KEY_ITEM = 5
+    TILE_DOOR_OPEN = 3
 } TileType;
 
 typedef struct Map {

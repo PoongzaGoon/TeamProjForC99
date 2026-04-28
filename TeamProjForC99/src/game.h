@@ -17,8 +17,10 @@ struct Player {
     int y;
     Direction dir;
     int hp;
+    int maxHp;
     int bombCount;
     int keyCount;
+    int potionCount;
 };
 
 typedef struct Game {
