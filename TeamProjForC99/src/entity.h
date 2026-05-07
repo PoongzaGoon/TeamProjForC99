@@ -2,6 +2,7 @@
 #define ENTITY_H
 
 #include <wchar.h>
+#include <windows.h>
 
 #include "entities/box.h"
 #include "entities/door.h"
@@ -15,11 +16,19 @@ typedef enum EntityType {
     ENTITY_TYPE_DOOR = 1,
     ENTITY_TYPE_ITEM = 2,
     ENTITY_TYPE_BOX = 3,
-    ENTITY_TYPE_OBSTACLE = 4
+    ENTITY_TYPE_OBSTACLE = 4,
+    ENTITY_ATTACK_EFFECT = 5
 } EntityType;
 
 struct Game;
 typedef struct Entity Entity;
+
+typedef struct AttackEffectData {
+    DWORD createdTime;
+    int durationMs;
+    int solid;
+    int damageable;
+} AttackEffectData;
 
 typedef struct EntityVTable {
     const wchar_t* (*render)(const Entity* entity, const struct Game* game);
@@ -40,6 +49,7 @@ typedef struct Entity {
     ItemData itemData;
     BoxData boxData;
     ObstacleData obstacleData;
+    AttackEffectData attackEffectData;
     const EntityVTable* vtable;
 } Entity;
 
@@ -56,6 +66,8 @@ Entity* Entity_spawnItem(struct Game* game, int fieldRow, int fieldCol, int x, i
 Entity* Entity_spawnBox(struct Game* game, int fieldRow, int fieldCol, int x, int y, BoxContentType contentType, int amount);
 Entity* Entity_spawnObstacle(struct Game* game, int fieldRow, int fieldCol, int x, int y, ObstacleType obstacleType, int hp, int breakableByBomb);
 Entity* Entity_spawnObstacleWithGroup(struct Game* game, int fieldRow, int fieldCol, int x, int y, ObstacleType obstacleType, int hp, int breakableByBomb, int targetGroupId);
+Entity* Entity_spawnAttackEffect(struct Game* game, int fieldRow, int fieldCol, int x, int y);
+Entity* Entity_findAttackTargetAtCurrentField(const struct Game* game, int x, int y);
 int Entity_breakBombBreakableObstacleAt(struct Game* game, int fieldRow, int fieldCol, int x, int y);
 void Entity_updateAllCurrentField(struct Game* game);
 
@@ -64,5 +76,6 @@ Entity* Entity_findAtCurrentField(const struct Game* game, int x, int y);
 int Entity_interactAtCurrentField(struct Game* game, int x, int y);
 int Entity_isBlockedAtCurrentField(const struct Game* game, int x, int y);
 const wchar_t* Entity_renderAtCurrentField(const struct Game* game, int x, int y);
+const wchar_t* Entity_renderEffectAtCurrentField(const struct Game* game, int x, int y);
 
 #endif

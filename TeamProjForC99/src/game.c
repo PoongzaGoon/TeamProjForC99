@@ -7,6 +7,7 @@
 #include "systems/interaction.h"
 #include "systems/item_actions.h"
 #include "systems/bomb.h"
+#include "systems/combat.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -231,6 +232,9 @@ void Game_update(Game* game) {
             Game_markTileDirty(game, interactX, interactY);
             Game_markTileDirty(game, playerBefore.x, playerBefore.y);
         }
+        break;
+    case INPUT_MELEE_ATTACK:
+        Combat_meleeAttack(game);
         break;
     case INPUT_QUIT:
         game->running = 0;

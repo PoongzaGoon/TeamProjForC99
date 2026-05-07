@@ -10,7 +10,8 @@ typedef enum ObstacleType {
     OBSTACLE_ICE_WALL = 0,
     OBSTACLE_VOLCANO = 1,
     OBSTACLE_SWITCH = 2,
-    OBSTACLE_ELECTRIC_WALL = 3
+    OBSTACLE_ELECTRIC_WALL = 3,
+    OBSTACLE_TREE = 4
 } ObstacleType;
 
 typedef struct ObstacleData {

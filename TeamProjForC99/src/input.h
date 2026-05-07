@@ -10,6 +10,7 @@ typedef enum InputCommand {
     INPUT_INTERACT,
     INPUT_USE_POTION,
     INPUT_PLACE_BOMB,
+    INPUT_MELEE_ATTACK,
     INPUT_QUIT
 } InputCommand;
 

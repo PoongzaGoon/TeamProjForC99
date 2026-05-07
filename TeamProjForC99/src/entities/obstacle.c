@@ -23,6 +23,8 @@ static const wchar_t* Obstacle_render(const Entity* entity, const Game* game) {
         return entity->obstacleData.used ? L"✅" : L"⚙️";
     case OBSTACLE_ELECTRIC_WALL:
         return L"⚡️";
+    case OBSTACLE_TREE:
+        return L"🌳";
     default:
         return NULL;
     }
@@ -101,6 +103,9 @@ static int Obstacle_interact(Entity* entity, Game* game) {
         return 1;
     case OBSTACLE_ELECTRIC_WALL:
         Log_push(&game->logSystem, L"전기가 흐르는 벽이다.");
+        return 1;
+    case OBSTACLE_TREE:
+        Log_push(&game->logSystem, L"검으로 벨 수 있을 것 같은 나무다.");
         return 1;
     default:
         Log_push(&game->logSystem, L"알 수 없는 장애물이다.");
