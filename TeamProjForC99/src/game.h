@@ -1,17 +1,12 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "direction.h"
 #include "log.h"
 #include "overworld.h"
 #include "entity.h"
+#include "projectile.h"
 #include "systems/bomb.h"
-
-typedef enum Direction {
-    DIR_UP,
-    DIR_DOWN,
-    DIR_LEFT,
-    DIR_RIGHT
-} Direction;
 
 struct Player {
     int x;
@@ -31,6 +26,7 @@ typedef struct Game {
     Entity entities[MAX_ENTITIES];
     int entityCount;
     BombSystem bombSystem;
+    ProjectileSystem projectileSystem;
     int running;
     int prevCols;
     int prevRows;
@@ -45,5 +41,6 @@ typedef struct Game {
 void Game_init(Game* game);
 void Game_update(Game* game);
 void Game_run(Game* game);
+void Game_markTileDirty(Game* game, int x, int y);
 
 #endif
