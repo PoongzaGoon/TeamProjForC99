@@ -227,6 +227,7 @@ void Game_update(Game* game) {
                 &interactY
             );
             Game_markTileDirty(game, interactX, interactY);
+            Game_markTileDirty(game, playerBefore.x, playerBefore.y);
         }
         break;
     case INPUT_QUIT:

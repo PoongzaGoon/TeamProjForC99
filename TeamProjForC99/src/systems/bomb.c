@@ -53,6 +53,49 @@ static int BombSystem_isPlayerInBlast(const BombInstance* bomb, const Player* pl
     return 0;
 }
 
+/*
+[Function]
+
+* 역할: 폭탄 중심과 상하좌우 1칸 폭발 범위에서 폭탄 파괴 가능 Obstacle을 파괴한다.
+* 입력: bomb - 폭발 상태로 전이된 폭탄, game - Entity/Overworld/로그 접근용 게임 상태
+* 출력: 하나 이상의 Obstacle이 파괴되면 1, 없으면 0
+* 주의: 폭발은 Entity active 상태만 바꾸며 map 타일은 수정하지 않는다.
+*/
+static int BombSystem_breakObstaclesInBlast(const BombInstance* bomb, Game* game) {
+    static const int OFFSETS[5][2] = {
+        { 0, 0 },
+        { 0, -1 },
+        { 0, 1 },
+        { -1, 0 },
+        { 1, 0 }
+    };
+    const Map* blastMap;
+    int changed = 0;
+    int i;
+
+    if (bomb->fieldRow < 0 || bomb->fieldRow >= OVERWORLD_ROWS ||
+        bomb->fieldCol < 0 || bomb->fieldCol >= OVERWORLD_COLS) {
+        return 0;
+    }
+
+    blastMap = &game->overworld.fields[bomb->fieldRow][bomb->fieldCol];
+
+    for (i = 0; i < 5; ++i) {
+        int bx = bomb->x + OFFSETS[i][0];
+        int by = bomb->y + OFFSETS[i][1];
+
+        if (!Map_isInside(blastMap, bx, by)) {
+            continue;
+        }
+
+        if (Entity_breakBombBreakableObstacleAt(game, bomb->fieldRow, bomb->fieldCol, bx, by)) {
+            changed = 1;
+        }
+    }
+
+    return changed;
+}
+
 void BombSystem_init(BombSystem* bombSystem) {
     int i;
 
@@ -63,6 +106,7 @@ void BombSystem_init(BombSystem* bombSystem) {
 
 int BombSystem_tryPlaceFront(BombSystem* bombSystem, Game* game) {
     Map* currentMap = Overworld_getCurrentMap(&game->overworld);
+    Entity* frontEntity;
     int targetX;
     int targetY;
     int i;
@@ -84,9 +128,15 @@ int BombSystem_tryPlaceFront(BombSystem* bombSystem, Game* game) {
         return 0;
     }
 
-    if (Entity_findAtCurrentField(game, targetX, targetY) != NULL) {
-        Log_push(&game->logSystem, L"다른 엔티티가 있어 설치할 수 없다.");
-        return 0;
+    frontEntity = Entity_findAtCurrentField(game, targetX, targetY);
+    if (frontEntity != NULL) {
+        if (Obstacle_canBreakByBomb(frontEntity)) {
+            targetX = game->player.x;
+            targetY = game->player.y;
+        } else {
+            Log_push(&game->logSystem, L"다른 엔티티가 있어 설치할 수 없다.");
+            return 0;
+        }
     }
 
     if (BombSystem_hasBombAt(
@@ -152,6 +202,10 @@ int BombSystem_update(BombSystem* bombSystem, Game* game) {
                 bomb->effectStartTime = now;
                 changed = 1;
                 Log_push(&game->logSystem, L"폭발이 발생했다.");
+
+                if (BombSystem_breakObstaclesInBlast(bomb, game)) {
+                    changed = 1;
+                }
 
                 if (BombSystem_isPlayerInBlast(
                     bomb,

@@ -68,6 +68,9 @@
     <ClCompile Include="src\entities\item.c">
       <Filter>소스 파일\src\entities</Filter>
     </ClCompile>
+    <ClCompile Include="src\entities\obstacle.c">
+      <Filter>소스 파일\src\entities</Filter>
+    </ClCompile>
     <ClCompile Include="src\field_spawns.c">
       <Filter>소스 파일\src</Filter>
     </ClCompile>
@@ -137,6 +140,9 @@
       <Filter>헤더 파일\src\entities</Filter>
     </ClInclude>
     <ClInclude Include="src\entities\item.h">
+      <Filter>헤더 파일\src\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entities\obstacle.h">
       <Filter>헤더 파일\src\entities</Filter>
     </ClInclude>
     <ClInclude Include="src\field_spawns.h">

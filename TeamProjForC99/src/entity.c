@@ -4,6 +4,7 @@
 
 #include "game.h"
 #include "field_spawns.h"
+#include "log.h"
 #include "overworld.h"
 
 static int Entity_addDoor(Game* game, int fieldRow, int fieldCol, int x, int y, int linkId) {
@@ -57,13 +58,30 @@ Entity* Entity_spawnBox(Game* game, int fieldRow, int fieldCol, int x, int y, Bo
     return entity;
 }
 
+Entity* Entity_spawnObstacle(Game* game, int fieldRow, int fieldCol, int x, int y, ObstacleType obstacleType, int hp, int breakableByBomb) {
+    Entity* entity;
+
+    if (game->entityCount >= MAX_ENTITIES) {
+        return NULL;
+    }
+
+    entity = &game->entities[game->entityCount++];
+    entity->active = 1;
+    entity->fieldRow = fieldRow;
+    entity->fieldCol = fieldCol;
+    entity->x = x;
+    entity->y = y;
+    Obstacle_init(entity, obstacleType, hp, breakableByBomb);
+    return entity;
+}
+
 /*
 [Function]
 
-* 역할: 필드 스폰 데이터를 Entity 배열로 변환해 Door/Item/Box 상호작용 대상을 월드 단위로 구성한다.
+* 역할: 필드 스폰 데이터를 Entity 배열로 변환해 Door/Item/Box/Obstacle 상호작용 대상을 월드 단위로 구성한다.
 * 입력: game - Overworld 좌표와 엔티티 저장소를 포함한 게임 상태
 * 출력: game->entities와 game->entityCount가 스폰 기준으로 재작성된다.
-* 주의: map 배열에는 지형만 유지하고, 열쇠/폭탄/포션/상자는 반드시 Entity로 생성한다.
+* 주의: map 배열에는 지형만 유지하고, 열쇠/폭탄/포션/상자/장애물은 반드시 Entity로 생성한다.
 */
 void Entity_buildFromSpawns(Game* game) {
     int row;
@@ -99,6 +117,9 @@ void Entity_buildFromSpawns(Game* game) {
                     break;
                 case SPAWN_BOX:
                     Entity_spawnBox(game, row, col, spawn->x, spawn->y, (BoxContentType)spawn->arg0, spawn->arg1);
+                    break;
+                case SPAWN_OBSTACLE:
+                    Entity_spawnObstacle(game, row, col, spawn->x, spawn->y, (ObstacleType)spawn->arg0, spawn->arg1, spawn->arg2);
                     break;
                 default:
                     break;
@@ -156,4 +177,23 @@ const wchar_t* Entity_renderAtCurrentField(const Game* game, int x, int y) {
     }
 
     return entity->vtable->render(entity, game);
+}
+
+/*
+[Function]
+
+* 역할: 지정 좌표의 폭탄 파괴 가능 Obstacle Entity를 찾아 파괴한다.
+* 입력: game - Entity 배열과 로그 시스템을 포함한 게임 상태, fieldRow/fieldCol/x/y - 폭발 범위 좌표
+* 출력: 얼음벽이 파괴되면 1을 반환하고 해당 Entity가 비활성화된다.
+* 주의: Obstacle은 Tile이 아니므로 map 배열을 수정하지 않는다.
+*/
+int Entity_breakBombBreakableObstacleAt(Game* game, int fieldRow, int fieldCol, int x, int y) {
+    Entity* entity = Entity_findAt(game, fieldRow, fieldCol, x, y);
+
+    if (!Obstacle_breakByBomb(entity)) {
+        return 0;
+    }
+
+    Log_push(&game->logSystem, L"얼음벽이 부서졌다!");
+    return 1;
 }
