@@ -23,11 +23,11 @@ static int Entity_addDoor(Game* game, int fieldRow, int fieldCol, int x, int y, 
     return 1;
 }
 
-static int Entity_addItem(Game* game, int fieldRow, int fieldCol, int x, int y, ItemType itemType, int amount) {
+Entity* Entity_spawnItem(Game* game, int fieldRow, int fieldCol, int x, int y, ItemType itemType, int amount) {
     Entity* entity;
 
     if (game->entityCount >= MAX_ENTITIES) {
-        return 0;
+        return NULL;
     }
 
     entity = &game->entities[game->entityCount++];
@@ -37,15 +37,33 @@ static int Entity_addItem(Game* game, int fieldRow, int fieldCol, int x, int y, 
     entity->x = x;
     entity->y = y;
     Item_init(entity, itemType, amount);
-    return 1;
+    return entity;
+}
+
+Entity* Entity_spawnBox(Game* game, int fieldRow, int fieldCol, int x, int y, BoxContentType contentType, int amount) {
+    Entity* entity;
+
+    if (game->entityCount >= MAX_ENTITIES) {
+        return NULL;
+    }
+
+    entity = &game->entities[game->entityCount++];
+    entity->active = 1;
+    entity->fieldRow = fieldRow;
+    entity->fieldCol = fieldCol;
+    entity->x = x;
+    entity->y = y;
+    Box_init(entity, contentType, amount);
+    return entity;
 }
 
 /*
 [Function]
-- 역할: 필드 스폰 데이터를 Entity 배열로 변환해 Door/Item 상호작용 대상을 월드 단위로 구성한다.
-- 입력: game - Overworld 좌표와 엔티티 저장소를 포함한 게임 상태.
-- 출력: game->entities와 game->entityCount가 스폰 기준으로 재작성된다.
-- 주의: map 배열에는 지형만 유지하고, 열쇠/폭탄/포션은 반드시 Item Entity로 생성한다.
+
+* 역할: 필드 스폰 데이터를 Entity 배열로 변환해 Door/Item/Box 상호작용 대상을 월드 단위로 구성한다.
+* 입력: game - Overworld 좌표와 엔티티 저장소를 포함한 게임 상태
+* 출력: game->entities와 game->entityCount가 스폰 기준으로 재작성된다.
+* 주의: map 배열에는 지형만 유지하고, 열쇠/폭탄/포션/상자는 반드시 Entity로 생성한다.
 */
 void Entity_buildFromSpawns(Game* game) {
     int row;
@@ -71,13 +89,16 @@ void Entity_buildFromSpawns(Game* game) {
                     Entity_addDoor(game, row, col, spawn->x, spawn->y, spawn->arg3);
                     break;
                 case SPAWN_KEY:
-                    Entity_addItem(game, row, col, spawn->x, spawn->y, ITEM_KEY, spawn->arg0);
+                    Entity_spawnItem(game, row, col, spawn->x, spawn->y, ITEM_KEY, spawn->arg0);
                     break;
                 case SPAWN_BOMB:
-                    Entity_addItem(game, row, col, spawn->x, spawn->y, ITEM_BOMB, spawn->arg0);
+                    Entity_spawnItem(game, row, col, spawn->x, spawn->y, ITEM_BOMB, spawn->arg0);
                     break;
                 case SPAWN_POTION:
-                    Entity_addItem(game, row, col, spawn->x, spawn->y, ITEM_POTION, spawn->arg0);
+                    Entity_spawnItem(game, row, col, spawn->x, spawn->y, ITEM_POTION, spawn->arg0);
+                    break;
+                case SPAWN_BOX:
+                    Entity_spawnBox(game, row, col, spawn->x, spawn->y, (BoxContentType)spawn->arg0, spawn->arg1);
                     break;
                 default:
                     break;

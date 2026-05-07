@@ -7,7 +7,9 @@
 #include "systems/item_actions.h"
 #include "systems/bomb.h"
 
+#include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <windows.h>
 
 static void Game_markTileDirty(Game* game, int x, int y) {
@@ -136,6 +138,8 @@ static void Game_movePlayer(Game* game, int dx, int dy, Direction dir) {
 }
 
 void Game_init(Game* game) {
+    srand((unsigned int)time(NULL));
+
     Overworld_init(&game->overworld);
 
     game->player.x = 2;

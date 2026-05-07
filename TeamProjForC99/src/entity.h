@@ -3,6 +3,7 @@
 
 #include <wchar.h>
 
+#include "entities/box.h"
 #include "entities/door.h"
 #include "entities/item.h"
 
@@ -11,7 +12,8 @@
 typedef enum EntityType {
     ENTITY_TYPE_NONE = 0,
     ENTITY_TYPE_DOOR = 1,
-    ENTITY_TYPE_ITEM = 2
+    ENTITY_TYPE_ITEM = 2,
+    ENTITY_TYPE_BOX = 3
 } EntityType;
 
 struct Game;
@@ -34,18 +36,21 @@ typedef struct Entity {
     int y;
     DoorData doorData;
     ItemData itemData;
+    BoxData boxData;
     const EntityVTable* vtable;
 } Entity;
 
 /*
 [Function]
 
-* 역할: Overworld 배치 기준으로 Spawn 데이터를 순회해 Door Entity를 초기화한다.
+* 역할: Overworld 배치 기준으로 Spawn 데이터를 순회해 Door/Item/Box Entity를 초기화한다.
 * 입력: game - 게임 상태 포인터
-* 출력: game->entities / game->entityCount가 Door 기준으로 재구성된다.
-* 주의: 문 상태의 진실은 Overworld doorLinks에 두고 Entity는 linkId만 참조한다.
+* 출력: game->entities / game->entityCount가 스폰 기준으로 재구성된다.
+* 주의: map 배열에는 Tile만 유지하고 상자와 아이템은 Entity로만 배치한다.
 */
 void Entity_buildFromSpawns(struct Game* game);
+Entity* Entity_spawnItem(struct Game* game, int fieldRow, int fieldCol, int x, int y, ItemType itemType, int amount);
+Entity* Entity_spawnBox(struct Game* game, int fieldRow, int fieldCol, int x, int y, BoxContentType contentType, int amount);
 
 Entity* Entity_findAt(const struct Game* game, int fieldRow, int fieldCol, int x, int y);
 Entity* Entity_findAtCurrentField(const struct Game* game, int x, int y);

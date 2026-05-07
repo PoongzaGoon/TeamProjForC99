@@ -1,12 +1,15 @@
 #ifndef SPAWN_H
 #define SPAWN_H
 
+#include "entities/box.h"
+
 typedef enum SpawnType {
     SPAWN_NONE = 0,
     SPAWN_DOOR = 1,
     SPAWN_KEY = 2,
     SPAWN_BOMB = 3,
-    SPAWN_POTION = 4
+    SPAWN_POTION = 4,
+    SPAWN_BOX = 5
 } SpawnType;
 
 typedef struct SpawnData {
