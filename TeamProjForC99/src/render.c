@@ -88,9 +88,9 @@ static const wchar_t* Render_dirToText(Direction dir) {
 /*
 [Function]
 
-* 역할: 단일 타일에 대해 타일→엔티티→폭탄→발사체 순서의 기본 레이어를 출력한다.
+* 역할: 단일 타일에 대해 타일→엔티티→폭탄→발사체→이펙트 순서의 기본 레이어를 출력한다.
 * 입력: game - 게임 상태, x/y - 현재 필드 좌표
-* 출력: 해당 좌표의 배경/엔티티/폭탄 레이어가 콘솔에 그려진다.
+* 출력: 해당 좌표의 배경/엔티티/폭탄/발사체/이펙트 레이어가 콘솔에 그려진다.
 * 주의: 플레이어 레이어는 처리하지 않으며 상태 변경 로직을 수행하지 않는다.
 */
 static void Render_drawBaseLayersAt(const Game* game, int x, int y) {
@@ -110,6 +110,7 @@ static void Render_drawBaseLayersAt(const Game* game, int x, int y) {
         x,
         y
     );
+    const wchar_t* effectGlyph = Entity_renderEffectAtCurrentField(game, x, y);
 
     Render_printW(Render_tileToEmoji(Map_getTile(currentMap, x, y)));
 
@@ -126,6 +127,11 @@ static void Render_drawBaseLayersAt(const Game* game, int x, int y) {
     if (projectileGlyph) {
         Render_gotoXY(MAP_ORIGIN_X + (x * TILE_DRAW_W), MAP_ORIGIN_Y + y);
         Render_printW(projectileGlyph);
+    }
+
+    if (effectGlyph) {
+        Render_gotoXY(MAP_ORIGIN_X + (x * TILE_DRAW_W), MAP_ORIGIN_Y + y);
+        Render_printW(effectGlyph);
     }
 }
 
@@ -202,7 +208,7 @@ void Render_refreshUI(const Game* game) {
     Render_printAt(uiX, uiY + 9, buffer);
 
     Render_printAt(uiX, uiY + 10, L"이동: 방향키 / 조사: E");
-    Render_printAt(uiX, uiY + 11, L"H:포션 B:폭탄 Q:종료");
+    Render_printAt(uiX, uiY + 11, L"Space:공격 H:포션 B:폭탄 Q:종료");
 }
 
 void Render_refreshLog(const Game* game) {

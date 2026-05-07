@@ -113,6 +113,9 @@
     <ClCompile Include="src\systems\bomb.c">
       <Filter>소스 파일\src\systems</Filter>
     </ClCompile>
+    <ClCompile Include="src\systems\combat.c">
+      <Filter>소스 파일\src\systems</Filter>
+    </ClCompile>
     <ClCompile Include="src\systems\interaction.c">
       <Filter>소스 파일\src\systems</Filter>
     </ClCompile>
@@ -194,6 +197,9 @@
       <Filter>헤더 파일\src\fields</Filter>
     </ClInclude>
     <ClInclude Include="src\systems\bomb.h">
+      <Filter>헤더 파일\src\systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\systems\combat.h">
       <Filter>헤더 파일\src\systems</Filter>
     </ClInclude>
     <ClInclude Include="src\systems\interaction.h">

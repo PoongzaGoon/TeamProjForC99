@@ -35,6 +35,10 @@ InputCommand Input_pollCommand(void) {
         return INPUT_PLACE_BOMB;
     }
 
+    if (ch == ' ') {
+        return INPUT_MELEE_ATTACK;
+    }
+
     if (ch == 'q' || ch == 'Q') {
         return INPUT_QUIT;
     }
