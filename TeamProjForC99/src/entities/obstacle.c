@@ -10,7 +10,7 @@
 static const wchar_t* Obstacle_render(const Entity* entity, const Game* game) {
     (void)game;
 
-    if (!entity->active) {
+    if (!entity->active || !entity->obstacleData.active) {
         return NULL;
     }
 
@@ -19,6 +19,10 @@ static const wchar_t* Obstacle_render(const Entity* entity, const Game* game) {
         return L"🧊";
     case OBSTACLE_VOLCANO:
         return L"🌋";
+    case OBSTACLE_SWITCH:
+        return entity->obstacleData.used ? L"✅" : L"⚙️";
+    case OBSTACLE_ELECTRIC_WALL:
+        return L"⚡️";
     default:
         return NULL;
     }
@@ -27,13 +31,52 @@ static const wchar_t* Obstacle_render(const Entity* entity, const Game* game) {
 /*
 [Function]
 
-* 역할: Obstacle Entity를 일반 조사했을 때 장애물 종류별 안내 로그를 출력한다.
-* 입력: entity - 조사 대상 Obstacle, game - 로그 시스템을 포함한 게임 상태
-* 출력: 처리되면 1을 반환하며 Entity active 상태는 바꾸지 않는다.
-* 주의: 얼음벽은 상호작용으로 제거되지 않고 폭탄으로만 파괴된다.
+* 역할: 스위치와 같은 targetGroupId를 가진 현재 필드의 전기벽 Entity를 비활성화한다.
+* 입력: switchEntity - 작동한 스위치, game - Entity 배열과 렌더 갱신 상태를 포함한 게임 상태
+* 출력: 비활성화한 전기벽 수를 반환하며 해당 전기벽의 active/solid 상태를 끈다.
+* 주의: map 배열은 수정하지 않고 Entity 상태만 변경한다.
+*/
+static int Obstacle_disableElectricWallsInGroup(Entity* switchEntity, Game* game) {
+    int i;
+    int disabledCount = 0;
+    int targetGroupId = switchEntity->obstacleData.targetGroupId;
+
+    for (i = 0; i < game->entityCount; ++i) {
+        Entity* entity = &game->entities[i];
+
+        if (!entity->active || entity->type != ENTITY_TYPE_OBSTACLE) {
+            continue;
+        }
+        if (entity->fieldRow != switchEntity->fieldRow || entity->fieldCol != switchEntity->fieldCol) {
+            continue;
+        }
+        if (entity->obstacleData.obstacleType != OBSTACLE_ELECTRIC_WALL) {
+            continue;
+        }
+        if (entity->obstacleData.targetGroupId != targetGroupId) {
+            continue;
+        }
+
+        entity->obstacleData.active = 0;
+        entity->obstacleData.solid = 0;
+        entity->active = 0;
+        Game_markTileDirty(game, entity->x, entity->y);
+        ++disabledCount;
+    }
+
+    return disabledCount;
+}
+
+/*
+[Function]
+
+* 역할: Obstacle Entity를 일반 조사했을 때 장애물 종류별 안내 로그 또는 스위치 작동을 처리한다.
+* 입력: entity - 조사 대상 Obstacle, game - 로그/엔티티 시스템을 포함한 게임 상태
+* 출력: 처리되면 1을 반환하며 스위치 작동 시 연결 전기벽 Entity 상태가 비활성화된다.
+* 주의: 전기벽 제거는 Tile 변경 없이 Entity active/state로만 수행한다.
 */
 static int Obstacle_interact(Entity* entity, Game* game) {
-    if (!entity->active) {
+    if (!entity->active || !entity->obstacleData.active) {
         return 0;
     }
 
@@ -43,6 +86,21 @@ static int Obstacle_interact(Entity* entity, Game* game) {
         return 1;
     case OBSTACLE_VOLCANO:
         Log_push(&game->logSystem, L"뜨거운 화산이다. 북쪽으로 불을 뿜는다.");
+        return 1;
+    case OBSTACLE_SWITCH:
+        if (entity->obstacleData.used) {
+            Log_push(&game->logSystem, L"이미 작동한 스위치다.");
+            return 1;
+        }
+        entity->obstacleData.used = 1;
+        Log_push(&game->logSystem, L"스위치를 눌렀다.");
+        if (Obstacle_disableElectricWallsInGroup(entity, game) > 0) {
+            Log_push(&game->logSystem, L"전기벽이 사라졌다.");
+        }
+        Game_markTileDirty(game, entity->x, entity->y);
+        return 1;
+    case OBSTACLE_ELECTRIC_WALL:
+        Log_push(&game->logSystem, L"전기가 흐르는 벽이다.");
         return 1;
     default:
         Log_push(&game->logSystem, L"알 수 없는 장애물이다.");
@@ -66,7 +124,7 @@ static void Obstacle_takeDamage(Entity* entity, int amount) {
 static void Obstacle_update(Entity* entity, Game* game) {
     DWORD now;
 
-    if (!entity->active || entity->obstacleData.obstacleType != OBSTACLE_VOLCANO) {
+    if (!entity->active || !entity->obstacleData.active || entity->obstacleData.obstacleType != OBSTACLE_VOLCANO) {
         return;
     }
 
@@ -83,7 +141,7 @@ static void Obstacle_update(Entity* entity, Game* game) {
 
 static int Obstacle_isBlocking(const Entity* entity, const Game* game) {
     (void)game;
-    return entity->active && entity->obstacleData.solid;
+    return entity->active && entity->obstacleData.active && entity->obstacleData.solid;
 }
 
 static const EntityVTable OBSTACLE_VTABLE = {
@@ -98,20 +156,28 @@ const EntityVTable* Obstacle_getVTable(void) {
     return &OBSTACLE_VTABLE;
 }
 
-void Obstacle_init(Entity* entity, ObstacleType obstacleType, int hp, int breakableByBomb) {
+void Obstacle_initWithGroup(Entity* entity, ObstacleType obstacleType, int hp, int breakableByBomb, int targetGroupId) {
     entity->type = ENTITY_TYPE_OBSTACLE;
     entity->obstacleData.obstacleType = obstacleType;
     entity->obstacleData.hp = hp > 0 ? hp : 1;
     entity->obstacleData.breakableByBomb = breakableByBomb ? 1 : 0;
+    entity->obstacleData.active = 1;
+    entity->obstacleData.targetGroupId = targetGroupId;
+    entity->obstacleData.used = 0;
     entity->obstacleData.solid = 1;
     entity->obstacleData.fireCooldownMs = obstacleType == OBSTACLE_VOLCANO ? 3000 : 0;
     entity->obstacleData.lastFireTime = GetTickCount();
     entity->vtable = Obstacle_getVTable();
 }
 
+void Obstacle_init(Entity* entity, ObstacleType obstacleType, int hp, int breakableByBomb) {
+    Obstacle_initWithGroup(entity, obstacleType, hp, breakableByBomb, 0);
+}
+
 int Obstacle_canBreakByBomb(const Entity* entity) {
     return entity &&
         entity->active &&
+        entity->obstacleData.active &&
         entity->type == ENTITY_TYPE_OBSTACLE &&
         entity->obstacleData.obstacleType == OBSTACLE_ICE_WALL &&
         entity->obstacleData.breakableByBomb;
@@ -131,6 +197,8 @@ int Obstacle_breakByBomb(Entity* entity) {
     }
 
     entity->obstacleData.hp = 0;
+    entity->obstacleData.active = 0;
+    entity->obstacleData.solid = 0;
     entity->active = 0;
     return 1;
 }
