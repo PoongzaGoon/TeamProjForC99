@@ -2,6 +2,7 @@
 #define SPAWN_H
 
 #include "entities/box.h"
+#include "entities/obstacle.h"
 
 typedef enum SpawnType {
     SPAWN_NONE = 0,
@@ -9,7 +10,8 @@ typedef enum SpawnType {
     SPAWN_KEY = 2,
     SPAWN_BOMB = 3,
     SPAWN_POTION = 4,
-    SPAWN_BOX = 5
+    SPAWN_BOX = 5,
+    SPAWN_OBSTACLE = 6
 } SpawnType;
 
 typedef struct SpawnData {

@@ -44,10 +44,10 @@ void BombSystem_init(BombSystem* bombSystem);
 /*
 [Function]
 
-* 역할: 플레이어 전방 1칸에 폭탄 설치를 시도한다.
+* 역할: 플레이어 전방 1칸 또는 전방 폭탄 파괴 장애물에 인접한 현재 칸에 폭탄 설치를 시도한다.
 * 입력: bombSystem - 폭탄 저장소, game - 플레이어/맵/엔티티/로그 접근용 상태
 * 출력: 설치 성공 시 1, 실패 시 0
-* 주의: 설치 가능 여부 판정과 bombCount 차감은 이 함수에서 처리한다.
+* 주의: 설치 가능 여부 판정과 bombCount 차감은 이 함수에서 처리하며, 장애물 자체에 폭탄을 겹쳐 놓지 않는다.
 */
 int BombSystem_tryPlaceFront(BombSystem* bombSystem, struct Game* game);
 

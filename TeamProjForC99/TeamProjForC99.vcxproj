@@ -133,6 +133,7 @@
     <ClCompile Include="src\entities\box.c" />
     <ClCompile Include="src\entities\door.c" />
     <ClCompile Include="src\entities\item.c" />
+    <ClCompile Include="src\entities\obstacle.c" />
     <ClCompile Include="src\field_spawns.c" />
     <ClCompile Include="src\overworld.c" />
     <ClCompile Include="src\fields\field1.c" />
@@ -158,6 +159,7 @@
     <ClInclude Include="src\entities\box.h" />
     <ClInclude Include="src\entities\door.h" />
     <ClInclude Include="src\entities\item.h" />
+    <ClInclude Include="src\entities\obstacle.h" />
     <ClInclude Include="src\field_spawns.h" />
     <ClInclude Include="src\spawn.h" />
     <ClInclude Include="src\overworld.h" />
