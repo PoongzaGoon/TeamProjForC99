@@ -3,6 +3,7 @@
 #include "render.h"
 
 #include "entity.h"
+#include "projectile.h"
 #include "systems/bomb.h"
 
 #include <stdio.h>
@@ -87,7 +88,7 @@ static const wchar_t* Render_dirToText(Direction dir) {
 /*
 [Function]
 
-* 역할: 단일 타일에 대해 타일→엔티티→폭탄 순서의 기본 레이어를 출력한다.
+* 역할: 단일 타일에 대해 타일→엔티티→폭탄→발사체 순서의 기본 레이어를 출력한다.
 * 입력: game - 게임 상태, x/y - 현재 필드 좌표
 * 출력: 해당 좌표의 배경/엔티티/폭탄 레이어가 콘솔에 그려진다.
 * 주의: 플레이어 레이어는 처리하지 않으며 상태 변경 로직을 수행하지 않는다.
@@ -97,6 +98,13 @@ static void Render_drawBaseLayersAt(const Game* game, int x, int y) {
     const wchar_t* entityGlyph = Entity_renderAtCurrentField(game, x, y);
     const wchar_t* bombGlyph = BombSystem_getRenderGlyphAt(
         &game->bombSystem,
+        game->overworld.currentRow,
+        game->overworld.currentCol,
+        x,
+        y
+    );
+    const wchar_t* projectileGlyph = ProjectileSystem_getRenderGlyphAt(
+        &game->projectileSystem,
         game->overworld.currentRow,
         game->overworld.currentCol,
         x,
@@ -113,6 +121,11 @@ static void Render_drawBaseLayersAt(const Game* game, int x, int y) {
     if (bombGlyph) {
         Render_gotoXY(MAP_ORIGIN_X + (x * TILE_DRAW_W), MAP_ORIGIN_Y + y);
         Render_printW(bombGlyph);
+    }
+
+    if (projectileGlyph) {
+        Render_gotoXY(MAP_ORIGIN_X + (x * TILE_DRAW_W), MAP_ORIGIN_Y + y);
+        Render_printW(projectileGlyph);
     }
 }
 

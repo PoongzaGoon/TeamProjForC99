@@ -3,6 +3,7 @@
 #include "entity.h"
 #include "input.h"
 #include "render.h"
+#include "projectile.h"
 #include "systems/interaction.h"
 #include "systems/item_actions.h"
 #include "systems/bomb.h"
@@ -12,7 +13,7 @@
 #include <time.h>
 #include <windows.h>
 
-static void Game_markTileDirty(Game* game, int x, int y) {
+void Game_markTileDirty(Game* game, int x, int y) {
     int i;
 
     if (game->tileDirtyCount >= 8) {
@@ -158,6 +159,7 @@ void Game_init(Game* game) {
     game->entityCount = 0;
     Entity_buildFromSpawns(game);
     BombSystem_init(&game->bombSystem);
+    ProjectileSystem_init(&game->projectileSystem);
 
     game->running = 1;
     Render_getConsoleSize(&game->prevCols, &game->prevRows);
@@ -237,7 +239,13 @@ void Game_update(Game* game) {
         break;
     }
 
+    Entity_updateAllCurrentField(game);
+
     if (BombSystem_update(&game->bombSystem, game)) {
+        game->fieldDirty = 1;
+    }
+
+    if (ProjectileSystem_updateAll(&game->projectileSystem, game)) {
         game->fieldDirty = 1;
     }
 

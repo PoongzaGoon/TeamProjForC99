@@ -3,6 +3,9 @@
 #include "../entity.h"
 #include "../game.h"
 #include "../log.h"
+#include "../projectile.h"
+
+#include <windows.h>
 
 static const wchar_t* Obstacle_render(const Entity* entity, const Game* game) {
     (void)game;
@@ -14,6 +17,8 @@ static const wchar_t* Obstacle_render(const Entity* entity, const Game* game) {
     switch (entity->obstacleData.obstacleType) {
     case OBSTACLE_ICE_WALL:
         return L"🧊";
+    case OBSTACLE_VOLCANO:
+        return L"🌋";
     default:
         return NULL;
     }
@@ -36,6 +41,9 @@ static int Obstacle_interact(Entity* entity, Game* game) {
     case OBSTACLE_ICE_WALL:
         Log_push(&game->logSystem, L"차가운 얼음벽이다. 폭탄으로 부술 수 있을 것 같다.");
         return 1;
+    case OBSTACLE_VOLCANO:
+        Log_push(&game->logSystem, L"뜨거운 화산이다. 북쪽으로 불을 뿜는다.");
+        return 1;
     default:
         Log_push(&game->logSystem, L"알 수 없는 장애물이다.");
         return 1;
@@ -47,14 +55,35 @@ static void Obstacle_takeDamage(Entity* entity, int amount) {
     (void)amount;
 }
 
+/*
+[Function]
+
+* 역할: 화산 Obstacle의 발사 주기를 검사하고 북쪽 칸에 불 발사체를 생성한다.
+* 입력: entity - 업데이트 대상 Obstacle, game - 현재 필드와 ProjectileSystem을 포함한 게임 상태
+* 출력: 발사 조건을 만족하면 PROJECTILE_FIRE가 생성되고 lastFireTime이 갱신된다.
+* 주의: 화산 방향은 이번 단계에서 DIR_UP으로 고정하며 map 타일은 변경하지 않는다.
+*/
 static void Obstacle_update(Entity* entity, Game* game) {
-    (void)entity;
-    (void)game;
+    DWORD now;
+
+    if (!entity->active || entity->obstacleData.obstacleType != OBSTACLE_VOLCANO) {
+        return;
+    }
+
+    now = GetTickCount();
+    if ((DWORD)(now - entity->obstacleData.lastFireTime) < (DWORD)entity->obstacleData.fireCooldownMs) {
+        return;
+    }
+
+    entity->obstacleData.lastFireTime = now;
+    if (ProjectileSystem_spawnFire(&game->projectileSystem, game, entity->x, entity->y - 1)) {
+        Log_push(&game->logSystem, L"화산이 불을 뿜었다!");
+    }
 }
 
 static int Obstacle_isBlocking(const Entity* entity, const Game* game) {
     (void)game;
-    return entity->active;
+    return entity->active && entity->obstacleData.solid;
 }
 
 static const EntityVTable OBSTACLE_VTABLE = {
@@ -74,6 +103,9 @@ void Obstacle_init(Entity* entity, ObstacleType obstacleType, int hp, int breaka
     entity->obstacleData.obstacleType = obstacleType;
     entity->obstacleData.hp = hp > 0 ? hp : 1;
     entity->obstacleData.breakableByBomb = breakableByBomb ? 1 : 0;
+    entity->obstacleData.solid = 1;
+    entity->obstacleData.fireCooldownMs = obstacleType == OBSTACLE_VOLCANO ? 3000 : 0;
+    entity->obstacleData.lastFireTime = GetTickCount();
     entity->vtable = Obstacle_getVTable();
 }
 

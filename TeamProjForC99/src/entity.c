@@ -129,6 +129,31 @@ void Entity_buildFromSpawns(Game* game) {
     }
 }
 
+/*
+[Function]
+
+* 역할: 현재 필드에 있는 활성 Entity의 update 함수를 호출한다.
+* 입력: game - 현재 Overworld 좌표와 Entity 배열을 포함한 게임 상태
+* 출력: 각 Entity가 자신의 시간 기반 상태를 갱신할 수 있다.
+* 주의: 렌더링은 수행하지 않고 vtable update가 있는 Entity만 처리한다.
+*/
+void Entity_updateAllCurrentField(Game* game) {
+    int i;
+
+    for (i = 0; i < game->entityCount; ++i) {
+        Entity* entity = &game->entities[i];
+
+        if (!entity->active || !entity->vtable || !entity->vtable->update) {
+            continue;
+        }
+        if (entity->fieldRow != game->overworld.currentRow || entity->fieldCol != game->overworld.currentCol) {
+            continue;
+        }
+
+        entity->vtable->update(entity, game);
+    }
+}
+
 Entity* Entity_findAt(const Game* game, int fieldRow, int fieldCol, int x, int y) {
     int i;
 

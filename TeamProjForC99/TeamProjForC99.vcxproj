@@ -129,6 +129,7 @@
     <ClCompile Include="src\log.c" />
     <ClCompile Include="src\main.c" />
     <ClCompile Include="src\map.c" />
+    <ClCompile Include="src\projectile.c" />
     <ClCompile Include="src\entity.c" />
     <ClCompile Include="src\entities\box.c" />
     <ClCompile Include="src\entities\door.c" />
@@ -155,6 +156,8 @@
     <ClInclude Include="src\input.h" />
     <ClInclude Include="src\log.h" />
     <ClInclude Include="src\map.h" />
+    <ClInclude Include="src\direction.h" />
+    <ClInclude Include="src\projectile.h" />
     <ClInclude Include="src\entity.h" />
     <ClInclude Include="src\entities\box.h" />
     <ClInclude Include="src\entities\door.h" />

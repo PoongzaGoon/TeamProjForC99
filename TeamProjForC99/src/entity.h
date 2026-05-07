@@ -56,6 +56,7 @@ Entity* Entity_spawnItem(struct Game* game, int fieldRow, int fieldCol, int x, i
 Entity* Entity_spawnBox(struct Game* game, int fieldRow, int fieldCol, int x, int y, BoxContentType contentType, int amount);
 Entity* Entity_spawnObstacle(struct Game* game, int fieldRow, int fieldCol, int x, int y, ObstacleType obstacleType, int hp, int breakableByBomb);
 int Entity_breakBombBreakableObstacleAt(struct Game* game, int fieldRow, int fieldCol, int x, int y);
+void Entity_updateAllCurrentField(struct Game* game);
 
 Entity* Entity_findAt(const struct Game* game, int fieldRow, int fieldCol, int x, int y);
 Entity* Entity_findAtCurrentField(const struct Game* game, int x, int y);
