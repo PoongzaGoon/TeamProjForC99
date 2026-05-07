@@ -58,7 +58,7 @@ Entity* Entity_spawnBox(Game* game, int fieldRow, int fieldCol, int x, int y, Bo
     return entity;
 }
 
-Entity* Entity_spawnObstacle(Game* game, int fieldRow, int fieldCol, int x, int y, ObstacleType obstacleType, int hp, int breakableByBomb) {
+Entity* Entity_spawnObstacleWithGroup(Game* game, int fieldRow, int fieldCol, int x, int y, ObstacleType obstacleType, int hp, int breakableByBomb, int targetGroupId) {
     Entity* entity;
 
     if (game->entityCount >= MAX_ENTITIES) {
@@ -71,8 +71,12 @@ Entity* Entity_spawnObstacle(Game* game, int fieldRow, int fieldCol, int x, int 
     entity->fieldCol = fieldCol;
     entity->x = x;
     entity->y = y;
-    Obstacle_init(entity, obstacleType, hp, breakableByBomb);
+    Obstacle_initWithGroup(entity, obstacleType, hp, breakableByBomb, targetGroupId);
     return entity;
+}
+
+Entity* Entity_spawnObstacle(Game* game, int fieldRow, int fieldCol, int x, int y, ObstacleType obstacleType, int hp, int breakableByBomb) {
+    return Entity_spawnObstacleWithGroup(game, fieldRow, fieldCol, x, y, obstacleType, hp, breakableByBomb, 0);
 }
 
 /*
@@ -119,7 +123,7 @@ void Entity_buildFromSpawns(Game* game) {
                     Entity_spawnBox(game, row, col, spawn->x, spawn->y, (BoxContentType)spawn->arg0, spawn->arg1);
                     break;
                 case SPAWN_OBSTACLE:
-                    Entity_spawnObstacle(game, row, col, spawn->x, spawn->y, (ObstacleType)spawn->arg0, spawn->arg1, spawn->arg2);
+                    Entity_spawnObstacleWithGroup(game, row, col, spawn->x, spawn->y, (ObstacleType)spawn->arg0, spawn->arg1, spawn->arg2, spawn->arg3);
                     break;
                 default:
                     break;

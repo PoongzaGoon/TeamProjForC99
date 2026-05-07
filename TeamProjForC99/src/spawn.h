@@ -18,10 +18,10 @@ typedef struct SpawnData {
     SpawnType type;
     int x;
     int y;
-    int arg0;
-    int arg1;
-    int arg2;
-    int arg3;
+    int arg0; /* SPAWN_OBSTACLE: ObstacleType */
+    int arg1; /* SPAWN_OBSTACLE: hp */
+    int arg2; /* SPAWN_OBSTACLE: breakableByBomb */
+    int arg3; /* SPAWN_DOOR: linkId, SPAWN_OBSTACLE: targetGroupId */
 } SpawnData;
 
 #endif

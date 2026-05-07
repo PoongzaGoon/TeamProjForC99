@@ -55,6 +55,7 @@ void Entity_buildFromSpawns(struct Game* game);
 Entity* Entity_spawnItem(struct Game* game, int fieldRow, int fieldCol, int x, int y, ItemType itemType, int amount);
 Entity* Entity_spawnBox(struct Game* game, int fieldRow, int fieldCol, int x, int y, BoxContentType contentType, int amount);
 Entity* Entity_spawnObstacle(struct Game* game, int fieldRow, int fieldCol, int x, int y, ObstacleType obstacleType, int hp, int breakableByBomb);
+Entity* Entity_spawnObstacleWithGroup(struct Game* game, int fieldRow, int fieldCol, int x, int y, ObstacleType obstacleType, int hp, int breakableByBomb, int targetGroupId);
 int Entity_breakBombBreakableObstacleAt(struct Game* game, int fieldRow, int fieldCol, int x, int y);
 void Entity_updateAllCurrentField(struct Game* game);
 
