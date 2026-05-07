@@ -59,6 +59,9 @@
     <ClCompile Include="src\entity.c">
       <Filter>소스 파일\src</Filter>
     </ClCompile>
+    <ClCompile Include="src\entities\box.c">
+      <Filter>소스 파일\src\entities</Filter>
+    </ClCompile>
     <ClCompile Include="src\entities\door.c">
       <Filter>소스 파일\src\entities</Filter>
     </ClCompile>
@@ -126,6 +129,9 @@
     </ClInclude>
     <ClInclude Include="src\entity.h">
       <Filter>헤더 파일\src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entities\box.h">
+      <Filter>헤더 파일\src\entities</Filter>
     </ClInclude>
     <ClInclude Include="src\entities\door.h">
       <Filter>헤더 파일\src\entities</Filter>
