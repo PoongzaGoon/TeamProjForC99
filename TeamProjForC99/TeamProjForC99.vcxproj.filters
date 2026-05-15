@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="소스 파일">
@@ -66,6 +66,12 @@
       <Filter>소스 파일\src\entities</Filter>
     </ClCompile>
     <ClCompile Include="src\entities\door.c">
+      <Filter>소스 파일\src\entities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entities\enemy.c">
+      <Filter>소스 파일\src\entities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entities\enemy_snake.c">
       <Filter>소스 파일\src\entities</Filter>
     </ClCompile>
     <ClCompile Include="src\entities\item.c">
@@ -149,6 +155,12 @@
       <Filter>헤더 파일\src\entities</Filter>
     </ClInclude>
     <ClInclude Include="src\entities\door.h">
+      <Filter>헤더 파일\src\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entities\enemy.h">
+      <Filter>헤더 파일\src\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entities\enemy_snake.h">
       <Filter>헤더 파일\src\entities</Filter>
     </ClInclude>
     <ClInclude Include="src\entities\item.h">

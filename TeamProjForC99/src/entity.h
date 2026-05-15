@@ -8,6 +8,7 @@
 #include "entities/door.h"
 #include "entities/item.h"
 #include "entities/obstacle.h"
+#include "entities/enemy_snake.h"
 
 #define MAX_ENTITIES 256
 
@@ -17,7 +18,8 @@ typedef enum EntityType {
     ENTITY_TYPE_ITEM = 2,
     ENTITY_TYPE_BOX = 3,
     ENTITY_TYPE_OBSTACLE = 4,
-    ENTITY_ATTACK_EFFECT = 5
+    ENTITY_ATTACK_EFFECT = 5,
+    ENTITY_TYPE_ENEMY_SNAKE = 6
 } EntityType;
 
 struct Game;
@@ -50,6 +52,8 @@ typedef struct Entity {
     BoxData boxData;
     ObstacleData obstacleData;
     AttackEffectData attackEffectData;
+    EnemySnakeData enemySnakeData;
+    struct Game* game;
     const EntityVTable* vtable;
 } Entity;
 
@@ -67,7 +71,10 @@ Entity* Entity_spawnBox(struct Game* game, int fieldRow, int fieldCol, int x, in
 Entity* Entity_spawnObstacle(struct Game* game, int fieldRow, int fieldCol, int x, int y, ObstacleType obstacleType, int hp, int breakableByBomb);
 Entity* Entity_spawnObstacleWithGroup(struct Game* game, int fieldRow, int fieldCol, int x, int y, ObstacleType obstacleType, int hp, int breakableByBomb, int targetGroupId);
 Entity* Entity_spawnAttackEffect(struct Game* game, int fieldRow, int fieldCol, int x, int y);
+Entity* Entity_spawnEnemySnake(struct Game* game, int fieldRow, int fieldCol, int x, int y);
+Entity* Entity_findAttackTargetAt(const struct Game* game, int fieldRow, int fieldCol, int x, int y);
 Entity* Entity_findAttackTargetAtCurrentField(const struct Game* game, int x, int y);
+int Entity_isDamageable(const Entity* entity);
 int Entity_breakBombBreakableObstacleAt(struct Game* game, int fieldRow, int fieldCol, int x, int y);
 void Entity_updateAllCurrentField(struct Game* game);
 

@@ -34,6 +34,11 @@ static void Combat_applyMeleeToEntity(Game* game, Entity* target) {
         return;
     }
 
+    if (Entity_isDamageable(target)) {
+        target->vtable->takeDamage(target, 1);
+        return;
+    }
+
     switch (target->type) {
     case ENTITY_TYPE_OBSTACLE:
         switch (target->obstacleData.obstacleType) {
@@ -103,11 +108,21 @@ void Combat_meleeAttack(Game* game) {
 /*
 [Function]
 
-* 역할: 플레이어가 바라보는 방향으로 원거리 투사체 발사를 요청한다.
-* 입력: game - 플레이어 방향, 현재 필드, ProjectileSystem을 포함한 게임 상태
-* 출력: 발사 성공/실패 또는 즉시 충돌 결과가 ProjectileSystem과 로그에 반영된다.
-* 주의: Combat은 입력과 Projectile 시스템 사이를 연결하며 투사체 이동 로직을 직접 처리하지 않는다.
+* 역할: 플레이어 원거리 공격의 2초 쿨타임을 검사한 뒤 발사를 요청한다.
+* 입력: game - 플레이어 쿨타임 상태, 방향, 현재 필드, ProjectileSystem을 포함한 게임 상태
+* 출력: 쿨타임 중이면 로그만 기록하고, 발사 성공 시 마지막 원거리 공격 시간이 갱신된다.
+* 주의: input은 이 함수를 호출만 하며 투사체 이동/충돌 로직은 Projectile 시스템에 위임한다.
 */
 void Combat_rangedAttack(Game* game) {
-    ProjectileSystem_spawnPlayerWind(&game->projectileSystem, game);
+    DWORD now = GetTickCount();
+
+    if (game->player.lastRangedAttackTime != 0 &&
+        (DWORD)(now - game->player.lastRangedAttackTime) < (DWORD)game->player.rangedCooldownMs) {
+        Log_push(&game->logSystem, L"아직 원거리 공격을 사용할 수 없다.");
+        return;
+    }
+
+    if (ProjectileSystem_spawnPlayerWind(&game->projectileSystem, game)) {
+        game->player.lastRangedAttackTime = now;
+    }
 }

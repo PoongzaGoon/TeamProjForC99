@@ -11,7 +11,8 @@ typedef enum SpawnType {
     SPAWN_BOMB = 3,
     SPAWN_POTION = 4,
     SPAWN_BOX = 5,
-    SPAWN_OBSTACLE = 6
+    SPAWN_OBSTACLE = 6,
+    SPAWN_ENEMY_SNAKE = 7
 } SpawnType;
 
 typedef struct SpawnData {
