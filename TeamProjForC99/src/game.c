@@ -14,33 +14,55 @@
 #include <time.h>
 #include <windows.h>
 
+/*
+[Function]
+
+* 역할: 다음 렌더 단계에서 다시 그릴 필드 좌표를 dirty 목록에 등록한다.
+* 입력: game - dirty 목록을 가진 게임 상태, x/y - 변경된 필드 좌표
+* 출력: 중복 없이 dirtyCells에 좌표가 추가된다.
+* 주의: 렌더링은 수행하지 않고 좌표 기록만 담당한다.
+*/
 void Game_markTileDirty(Game* game, int x, int y) {
+    const Map* currentMap = Overworld_getCurrentMapConst(&game->overworld);
     int i;
 
-    if (game->tileDirtyCount >= 8) {
+    if (!Map_isInside(currentMap, x, y)) {
         return;
     }
 
-    for (i = 0; i < game->tileDirtyCount; ++i) {
-        if (game->tileDirtyX[i] == x && game->tileDirtyY[i] == y) {
+    if (game->dirtyCellCount >= MAX_DIRTY_CELLS) {
+        game->fieldDirty = 1;
+        return;
+    }
+
+    for (i = 0; i < game->dirtyCellCount; ++i) {
+        if (game->dirtyCells[i].x == x && game->dirtyCells[i].y == y) {
             return;
         }
     }
 
-    game->tileDirtyX[game->tileDirtyCount] = x;
-    game->tileDirtyY[game->tileDirtyCount] = y;
-    ++game->tileDirtyCount;
+    game->dirtyCells[game->dirtyCellCount].x = x;
+    game->dirtyCells[game->dirtyCellCount].y = y;
+    ++game->dirtyCellCount;
 }
 
+/*
+[Function]
+
+* 역할: fieldDirty 또는 dirty cell/UI/log 플래그에 따라 필요한 영역만 출력한다.
+* 입력: game - 렌더 dirty 상태를 포함한 게임 상태
+* 출력: 변경된 필드 셀, UI, 로그가 갱신되고 dirty 상태가 초기화된다.
+* 주의: 전체 필드는 필드 전환/초기화/리사이즈 같은 fieldDirty 상황에서만 다시 그린다.
+*/
 static void Game_flushRender(Game* game) {
     int i;
 
     if (game->fieldDirty) {
-        Render_drawStaticMap(game);
+        Render_drawFullField(game);
         Render_drawPlayer(game);
     } else {
-        for (i = 0; i < game->tileDirtyCount; ++i) {
-            Render_redrawTile(game, game->tileDirtyX[i], game->tileDirtyY[i]);
+        for (i = 0; i < game->dirtyCellCount; ++i) {
+            Render_redrawCell(game, game->dirtyCells[i].x, game->dirtyCells[i].y);
         }
     }
 
@@ -55,7 +77,7 @@ static void Game_flushRender(Game* game) {
     game->fieldDirty = 0;
     game->uiDirty = 0;
     game->logDirty = 0;
-    game->tileDirtyCount = 0;
+    game->dirtyCellCount = 0;
 }
 
 static void Game_getFrontTileByDir(int x, int y, Direction dir, int* outX, int* outY) {
@@ -167,7 +189,7 @@ void Game_init(Game* game) {
     game->uiDirty = 1;
     game->logDirty = 1;
     game->fieldDirty = 1;
-    game->tileDirtyCount = 0;
+    game->dirtyCellCount = 0;
 }
 
 void Game_update(Game* game) {
@@ -245,13 +267,9 @@ void Game_update(Game* game) {
 
     Entity_updateAllCurrentField(game);
 
-    if (BombSystem_update(&game->bombSystem, game)) {
-        game->fieldDirty = 1;
-    }
+    BombSystem_update(&game->bombSystem, game);
 
-    if (ProjectileSystem_updateAll(&game->projectileSystem, game)) {
-        game->fieldDirty = 1;
-    }
+    ProjectileSystem_updateAll(&game->projectileSystem, game);
 
     if (rowBefore != game->overworld.currentRow || colBefore != game->overworld.currentCol) {
         game->fieldDirty = 1;

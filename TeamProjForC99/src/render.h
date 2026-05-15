@@ -26,10 +26,69 @@
 */
 void Render_initConsole(void);
 
-void Render_drawStaticMap(const Game* game);
-void Render_redrawTile(const Game* game, int x, int y);
+/*
+[Function]
+
+* 역할: 필드 진입/초기화 시 현재 필드 전체를 1회 그린다.
+
+* 입력: game - 현재 필드와 엔티티/발사체/이펙트 상태
+
+* 출력: 필드 영역이 현재 상태로 다시 출력된다.
+
+* 주의: 일반 게임 루프에서 매 프레임 호출하지 않는다.
+*/
+void Render_drawFullField(const Game* game);
+
+/*
+[Function]
+
+* 역할: 지정한 필드 좌표 한 칸만 우선순위에 따라 다시 그린다.
+
+* 입력: game - 읽기 전용 게임 상태, x/y - 필드 좌표
+
+* 출력: 해당 셀에 Tile, Entity, Projectile/Effect, Player 순서가 반영되어 출력된다.
+
+* 주의: 렌더링만 수행하며 게임 상태를 변경하지 않는다.
+*/
+void Render_redrawCell(const Game* game, int x, int y);
+
+/*
+[Function]
+
+* 역할: 플레이어의 현재 위치 한 칸에 플레이어 글리프를 출력한다.
+
+* 입력: game - 플레이어 좌표를 포함한 게임 상태
+
+* 출력: 플레이어 위치가 콘솔에 출력된다.
+
+* 주의: 이전 위치 정리는 dirty cell 재출력으로 처리한다.
+*/
 void Render_drawPlayer(const Game* game);
+
+/*
+[Function]
+
+* 역할: HP/폭탄/열쇠/포션/방향 등 UI 영역을 갱신한다.
+
+* 입력: game - UI에 표시할 상태값
+
+* 출력: UI 영역만 지우고 현재 상태값을 다시 출력한다.
+
+* 주의: uiDirty가 설정된 경우에만 호출해야 한다.
+*/
 void Render_refreshUI(const Game* game);
+
+/*
+[Function]
+
+* 역할: 메시지 로그 영역을 갱신한다.
+
+* 입력: game - 로그 메시지 큐를 포함한 게임 상태
+
+* 출력: 로그 영역만 지우고 최신 로그를 다시 출력한다.
+
+* 주의: logDirty가 설정된 경우에만 호출해야 한다.
+*/
 void Render_refreshLog(const Game* game);
 
 /*
