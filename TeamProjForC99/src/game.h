@@ -17,6 +17,8 @@ struct Player {
     int bombCount;
     int keyCount;
     int potionCount;
+    DWORD lastRangedAttackTime;
+    int rangedCooldownMs;
 };
 
 typedef struct DirtyCell {

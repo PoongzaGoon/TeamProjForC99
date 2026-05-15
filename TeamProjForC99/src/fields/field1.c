@@ -24,5 +24,7 @@ const SpawnData FIELD1_SPAWNS[] = {
     {SPAWN_BOX, 5, 1, BOX_CONTENT_TRAP, 1, 0, 0},
     {SPAWN_BOX, 6, 1, BOX_CONTENT_EMPTY, 1, 0, 0},
     {SPAWN_BOX, 7, 1, BOX_CONTENT_RANDOM, 1, 0, 0},
+    {SPAWN_ENEMY_SNAKE, 6, 3, 0, 0, 0, 0},
+    {SPAWN_ENEMY_SNAKE, 7, 4, 0, 0, 0, 0},
 };
 const int FIELD1_SPAWN_COUNT = (int)(sizeof(FIELD1_SPAWNS) / sizeof(FIELD1_SPAWNS[0]));

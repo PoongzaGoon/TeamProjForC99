@@ -6,6 +6,7 @@
 #include "field_spawns.h"
 #include "log.h"
 #include "overworld.h"
+#include "entities/enemy_snake.h"
 
 
 static const wchar_t* AttackEffect_render(const Entity* entity, const Game* game) {
@@ -77,6 +78,7 @@ static int Entity_addDoor(Game* game, int fieldRow, int fieldCol, int x, int y, 
 
     entity = &game->entities[game->entityCount++];
     entity->active = 1;
+    entity->game = game;
     entity->fieldRow = fieldRow;
     entity->fieldCol = fieldCol;
     entity->x = x;
@@ -94,6 +96,7 @@ Entity* Entity_spawnItem(Game* game, int fieldRow, int fieldCol, int x, int y, I
 
     entity = &game->entities[game->entityCount++];
     entity->active = 1;
+    entity->game = game;
     entity->fieldRow = fieldRow;
     entity->fieldCol = fieldCol;
     entity->x = x;
@@ -111,6 +114,7 @@ Entity* Entity_spawnBox(Game* game, int fieldRow, int fieldCol, int x, int y, Bo
 
     entity = &game->entities[game->entityCount++];
     entity->active = 1;
+    entity->game = game;
     entity->fieldRow = fieldRow;
     entity->fieldCol = fieldCol;
     entity->x = x;
@@ -128,6 +132,7 @@ Entity* Entity_spawnObstacleWithGroup(Game* game, int fieldRow, int fieldCol, in
 
     entity = &game->entities[game->entityCount++];
     entity->active = 1;
+    entity->game = game;
     entity->fieldRow = fieldRow;
     entity->fieldCol = fieldCol;
     entity->x = x;
@@ -140,6 +145,36 @@ Entity* Entity_spawnObstacle(Game* game, int fieldRow, int fieldCol, int x, int 
     return Entity_spawnObstacleWithGroup(game, fieldRow, fieldCol, x, y, obstacleType, hp, breakableByBomb, 0);
 }
 
+/*
+[Function]
+
+* 역할: SpawnData 또는 테스트 코드가 요청한 위치에 enemy_snake Entity를 생성한다.
+* 입력: game - Entity 저장소와 dirty 상태, fieldRow/fieldCol/x/y - 생성 위치
+* 출력: 빈 슬롯이 있으면 ENTITY_TYPE_ENEMY_SNAKE를 활성화하고 포인터를 반환한다.
+* 주의: map 배열을 수정하지 않고 Entity 계층에만 배치한다.
+*/
+Entity* Entity_spawnEnemySnake(Game* game, int fieldRow, int fieldCol, int x, int y) {
+    Entity* entity;
+
+    if (game->entityCount >= MAX_ENTITIES) {
+        return NULL;
+    }
+
+    entity = &game->entities[game->entityCount++];
+    entity->active = 1;
+    entity->game = game;
+    entity->fieldRow = fieldRow;
+    entity->fieldCol = fieldCol;
+    entity->x = x;
+    entity->y = y;
+    EnemySnake_init(entity);
+
+    if (fieldRow == game->overworld.currentRow && fieldCol == game->overworld.currentCol) {
+        Game_markTileDirty(game, x, y);
+    }
+
+    return entity;
+}
 
 /*
 [Function]
@@ -167,6 +202,7 @@ Entity* Entity_spawnAttackEffect(Game* game, int fieldRow, int fieldCol, int x, 
         entity = &game->entities[game->entityCount++];
     }
     entity->active = 1;
+    entity->game = game;
     entity->type = ENTITY_ATTACK_EFFECT;
     entity->fieldRow = fieldRow;
     entity->fieldCol = fieldCol;
@@ -229,6 +265,9 @@ void Entity_buildFromSpawns(Game* game) {
                 case SPAWN_OBSTACLE:
                     Entity_spawnObstacleWithGroup(game, row, col, spawn->x, spawn->y, (ObstacleType)spawn->arg0, spawn->arg1, spawn->arg2, spawn->arg3);
                     break;
+                case SPAWN_ENEMY_SNAKE:
+                    Entity_spawnEnemySnake(game, row, col, spawn->x, spawn->y);
+                    break;
                 default:
                     break;
                 }
@@ -263,6 +302,19 @@ void Entity_updateAllCurrentField(Game* game) {
     }
 }
 
+int Entity_isDamageable(const Entity* entity) {
+    if (!entity || !entity->active || !entity->vtable || !entity->vtable->takeDamage) {
+        return 0;
+    }
+
+    switch (entity->type) {
+    case ENTITY_TYPE_ENEMY_SNAKE:
+        return Enemy_isDamageable(&entity->enemySnakeData.base);
+    default:
+        return 0;
+    }
+}
+
 Entity* Entity_findAt(const Game* game, int fieldRow, int fieldCol, int x, int y) {
     int i;
 
@@ -283,7 +335,7 @@ Entity* Entity_findAtCurrentField(const Game* game, int x, int y) {
     return Entity_findAt(game, game->overworld.currentRow, game->overworld.currentCol, x, y);
 }
 
-Entity* Entity_findAttackTargetAtCurrentField(const Game* game, int x, int y) {
+Entity* Entity_findAttackTargetAt(const Game* game, int fieldRow, int fieldCol, int x, int y) {
     int i;
 
     for (i = 0; i < game->entityCount; ++i) {
@@ -291,12 +343,16 @@ Entity* Entity_findAttackTargetAtCurrentField(const Game* game, int x, int y) {
         if (!entity->active || entity->type == ENTITY_ATTACK_EFFECT) {
             continue;
         }
-        if (entity->fieldRow == game->overworld.currentRow && entity->fieldCol == game->overworld.currentCol && entity->x == x && entity->y == y) {
+        if (entity->fieldRow == fieldRow && entity->fieldCol == fieldCol && entity->x == x && entity->y == y) {
             return entity;
         }
     }
 
     return NULL;
+}
+
+Entity* Entity_findAttackTargetAtCurrentField(const Game* game, int x, int y) {
+    return Entity_findAttackTargetAt(game, game->overworld.currentRow, game->overworld.currentCol, x, y);
 }
 
 int Entity_interactAtCurrentField(Game* game, int x, int y) {

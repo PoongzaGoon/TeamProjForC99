@@ -37,24 +37,15 @@ static int ProjectileSystem_isBlockedByMap(const Map* map, int x, int y) {
     return !Map_isInside(map, x, y) || Map_isBoundary(map, x, y) || Map_isBlocked(map, x, y);
 }
 
-static int ProjectileSystem_canDamageEntity(const Entity* entity) {
-    if (!entity || !entity->active || !entity->vtable || !entity->vtable->takeDamage) {
+static int ProjectileSystem_canDamageEntity(const Projectile* projectile, const Entity* entity) {
+    if (!projectile || projectile->type != PROJECTILE_PLAYER_WIND || projectile->owner != PROJECTILE_OWNER_PLAYER) {
         return 0;
     }
 
-    switch (entity->type) {
-    case ENTITY_TYPE_DOOR:
-    case ENTITY_TYPE_ITEM:
-    case ENTITY_TYPE_BOX:
-    case ENTITY_TYPE_OBSTACLE:
-    case ENTITY_ATTACK_EFFECT:
-        return 0;
-    default:
-        return 1;
-    }
+    return Entity_isDamageable(entity);
 }
 
-static int ProjectileSystem_isEntityCollisionTarget(const Entity* entity, const Game* game) {
+static int ProjectileSystem_isEntityCollisionTarget(const Projectile* projectile, const Entity* entity, const Game* game) {
     if (!entity || !entity->active || entity->type == ENTITY_ATTACK_EFFECT) {
         return 0;
     }
@@ -63,7 +54,7 @@ static int ProjectileSystem_isEntityCollisionTarget(const Entity* entity, const 
         return 1;
     }
 
-    return ProjectileSystem_canDamageEntity(entity);
+    return ProjectileSystem_canDamageEntity(projectile, entity);
 }
 
 static int ProjectileSystem_tryHitPlayer(Projectile* projectile, Game* game, int x, int y) {
@@ -92,15 +83,14 @@ static int ProjectileSystem_tryHitPlayer(Projectile* projectile, Game* game, int
 }
 
 static int ProjectileSystem_tryHitEntity(Projectile* projectile, Game* game, int x, int y) {
-    Entity* target = Entity_findAt(game, projectile->fieldRow, projectile->fieldCol, x, y);
+    Entity* target = Entity_findAttackTargetAt(game, projectile->fieldRow, projectile->fieldCol, x, y);
 
-    if (!ProjectileSystem_isEntityCollisionTarget(target, game)) {
+    if (!ProjectileSystem_isEntityCollisionTarget(projectile, target, game)) {
         return 0;
     }
 
-    if (ProjectileSystem_canDamageEntity(target)) {
+    if (ProjectileSystem_canDamageEntity(projectile, target)) {
         target->vtable->takeDamage(target, projectile->damage);
-        Log_push(&game->logSystem, L"원거리 공격이 적중했다.");
     } else {
         Log_push(&game->logSystem, L"원거리 공격이 통하지 않는다.");
     }

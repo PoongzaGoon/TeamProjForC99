@@ -174,10 +174,17 @@ void Game_init(Game* game) {
     game->player.bombCount = 1;
     game->player.keyCount = 0;
     game->player.potionCount = 0;
+    game->player.lastRangedAttackTime = 0;
+    game->player.rangedCooldownMs = 2000;
 
     Log_init(&game->logSystem);
     Overworld_validateDoorTransitions(&game->overworld, &game->logSystem);
     Log_push(&game->logSystem, L"스테이지를 시작한다.");
+
+    game->uiDirty = 1;
+    game->logDirty = 1;
+    game->fieldDirty = 1;
+    game->dirtyCellCount = 0;
 
     game->entityCount = 0;
     Entity_buildFromSpawns(game);
@@ -186,10 +193,6 @@ void Game_init(Game* game) {
 
     game->running = 1;
     Render_getConsoleSize(&game->prevCols, &game->prevRows);
-    game->uiDirty = 1;
-    game->logDirty = 1;
-    game->fieldDirty = 1;
-    game->dirtyCellCount = 0;
 }
 
 void Game_update(Game* game) {
