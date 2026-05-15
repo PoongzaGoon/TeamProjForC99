@@ -95,6 +95,8 @@ static const wchar_t* Render_dirToText(Direction dir) {
 */
 static void Render_drawBaseLayersAt(const Game* game, int x, int y) {
     const Map* currentMap = Overworld_getCurrentMapConst(&game->overworld);
+    int drawX = MAP_ORIGIN_X + (x * TILE_DRAW_W);
+    int drawY = MAP_ORIGIN_Y + y;
     const wchar_t* entityGlyph = Entity_renderAtCurrentField(game, x, y);
     const wchar_t* bombGlyph = BombSystem_getRenderGlyphAt(
         &game->bombSystem,
@@ -112,30 +114,31 @@ static void Render_drawBaseLayersAt(const Game* game, int x, int y) {
     );
     const wchar_t* effectGlyph = Entity_renderEffectAtCurrentField(game, x, y);
 
+    Render_gotoXY(drawX, drawY);
     Render_printW(Render_tileToEmoji(Map_getTile(currentMap, x, y)));
 
     if (entityGlyph) {
-        Render_gotoXY(MAP_ORIGIN_X + (x * TILE_DRAW_W), MAP_ORIGIN_Y + y);
+        Render_gotoXY(drawX, drawY);
         Render_printW(entityGlyph);
     }
 
     if (bombGlyph) {
-        Render_gotoXY(MAP_ORIGIN_X + (x * TILE_DRAW_W), MAP_ORIGIN_Y + y);
+        Render_gotoXY(drawX, drawY);
         Render_printW(bombGlyph);
     }
 
     if (projectileGlyph) {
-        Render_gotoXY(MAP_ORIGIN_X + (x * TILE_DRAW_W), MAP_ORIGIN_Y + y);
+        Render_gotoXY(drawX, drawY);
         Render_printW(projectileGlyph);
     }
 
     if (effectGlyph) {
-        Render_gotoXY(MAP_ORIGIN_X + (x * TILE_DRAW_W), MAP_ORIGIN_Y + y);
+        Render_gotoXY(drawX, drawY);
         Render_printW(effectGlyph);
     }
 }
 
-void Render_drawStaticMap(const Game* game) {
+void Render_drawFullField(const Game* game) {
     const Map* currentMap = Overworld_getCurrentMapConst(&game->overworld);
     int x;
     int y;
@@ -150,7 +153,7 @@ void Render_drawStaticMap(const Game* game) {
     }
 }
 
-void Render_redrawTile(const Game* game, int x, int y) {
+void Render_redrawCell(const Game* game, int x, int y) {
     const Map* currentMap = Overworld_getCurrentMapConst(&game->overworld);
     int drawX;
     int drawY;

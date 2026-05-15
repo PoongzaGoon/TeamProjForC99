@@ -6,6 +6,43 @@
 #include "../map.h"
 #include "../overworld.h"
 
+
+static void BombSystem_markCellIfCurrentField(Game* game, const BombInstance* bomb, int x, int y) {
+    if (bomb->fieldRow == game->overworld.currentRow && bomb->fieldCol == game->overworld.currentCol) {
+        Game_markTileDirty(game, x, y);
+    }
+}
+
+static void BombSystem_markBlastDirtyIfCurrentField(Game* game, const BombInstance* bomb) {
+    static const int OFFSETS[5][2] = {
+        { 0, 0 },
+        { 0, -1 },
+        { 0, 1 },
+        { -1, 0 },
+        { 1, 0 }
+    };
+    const Map* blastMap;
+    int i;
+
+    if (bomb->fieldRow != game->overworld.currentRow || bomb->fieldCol != game->overworld.currentCol) {
+        return;
+    }
+
+    if (bomb->fieldRow < 0 || bomb->fieldRow >= OVERWORLD_ROWS ||
+        bomb->fieldCol < 0 || bomb->fieldCol >= OVERWORLD_COLS) {
+        return;
+    }
+
+    blastMap = &game->overworld.fields[bomb->fieldRow][bomb->fieldCol];
+    for (i = 0; i < 5; ++i) {
+        int bx = bomb->x + OFFSETS[i][0];
+        int by = bomb->y + OFFSETS[i][1];
+        if (Map_isInside(blastMap, bx, by)) {
+            Game_markTileDirty(game, bx, by);
+        }
+    }
+}
+
 static void BombSystem_getFrontTile(const Player* player, int* outX, int* outY) {
     *outX = player->x;
     *outY = player->y;
@@ -168,6 +205,7 @@ int BombSystem_tryPlaceFront(BombSystem* bombSystem, Game* game) {
         bomb->effectMs = 500;
 
         --game->player.bombCount;
+        BombSystem_markCellIfCurrentField(game, bomb, targetX, targetY);
         Log_push(&game->logSystem, L"폭탄을 설치했다.");
         return 1;
     }
@@ -201,6 +239,7 @@ int BombSystem_update(BombSystem* bombSystem, Game* game) {
                 bomb->state = BOMB_EXPLODING;
                 bomb->effectStartTime = now;
                 changed = 1;
+                BombSystem_markBlastDirtyIfCurrentField(game, bomb);
                 Log_push(&game->logSystem, L"폭발이 발생했다.");
 
                 if (BombSystem_breakObstaclesInBlast(bomb, game)) {
@@ -216,11 +255,13 @@ int BombSystem_update(BombSystem* bombSystem, Game* game) {
                     if (game->player.hp > 0) {
                         --game->player.hp;
                     }
+                    Game_markTileDirty(game, game->player.x, game->player.y);
                     Log_push(&game->logSystem, L"폭발에 휘말렸다.");
                 }
             }
         } else if (bomb->state == BOMB_EXPLODING) {
             if ((DWORD)(now - bomb->effectStartTime) >= (DWORD)bomb->effectMs) {
+                BombSystem_markBlastDirtyIfCurrentField(game, bomb);
                 bomb->state = BOMB_DONE;
                 bomb->active = 0;
                 changed = 1;

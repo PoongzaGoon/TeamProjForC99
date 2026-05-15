@@ -19,6 +19,13 @@ struct Player {
     int potionCount;
 };
 
+typedef struct DirtyCell {
+    int x;
+    int y;
+} DirtyCell;
+
+#define MAX_DIRTY_CELLS (MAP_W * MAP_H)
+
 typedef struct Game {
     Overworld overworld;
     Player player;
@@ -33,9 +40,8 @@ typedef struct Game {
     int uiDirty;
     int logDirty;
     int fieldDirty;
-    int tileDirtyCount;
-    int tileDirtyX[8];
-    int tileDirtyY[8];
+    int dirtyCellCount;
+    DirtyCell dirtyCells[MAX_DIRTY_CELLS];
 } Game;
 
 void Game_init(Game* game);
