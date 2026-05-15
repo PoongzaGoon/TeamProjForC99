@@ -4,6 +4,7 @@
 #include "../log.h"
 #include "../map.h"
 #include "../overworld.h"
+#include "../projectile.h"
 
 static void Combat_getFrontTile(const Player* player, int* x, int* y) {
     *x = player->x;
@@ -97,4 +98,16 @@ void Combat_meleeAttack(Game* game) {
 
     target = Entity_findAttackTargetAtCurrentField(game, targetX, targetY);
     Combat_applyMeleeToEntity(game, target);
+}
+
+/*
+[Function]
+
+* 역할: 플레이어가 바라보는 방향으로 원거리 투사체 발사를 요청한다.
+* 입력: game - 플레이어 방향, 현재 필드, ProjectileSystem을 포함한 게임 상태
+* 출력: 발사 성공/실패 또는 즉시 충돌 결과가 ProjectileSystem과 로그에 반영된다.
+* 주의: Combat은 입력과 Projectile 시스템 사이를 연결하며 투사체 이동 로직을 직접 처리하지 않는다.
+*/
+void Combat_rangedAttack(Game* game) {
+    ProjectileSystem_spawnPlayerWind(&game->projectileSystem, game);
 }

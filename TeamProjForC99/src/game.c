@@ -258,6 +258,9 @@ void Game_update(Game* game) {
     case INPUT_MELEE_ATTACK:
         Combat_meleeAttack(game);
         break;
+    case INPUT_RANGED_ATTACK:
+        Combat_rangedAttack(game);
+        break;
     case INPUT_QUIT:
         game->running = 0;
         break;

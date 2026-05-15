@@ -39,6 +39,10 @@ InputCommand Input_pollCommand(void) {
         return INPUT_MELEE_ATTACK;
     }
 
+    if (ch == 'c' || ch == 'C') {
+        return INPUT_RANGED_ATTACK;
+    }
+
     if (ch == 'q' || ch == 'Q') {
         return INPUT_QUIT;
     }
