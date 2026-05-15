@@ -211,7 +211,7 @@ void Render_refreshUI(const Game* game) {
     Render_printAt(uiX, uiY + 9, buffer);
 
     Render_printAt(uiX, uiY + 10, L"이동: 방향키 / 조사: E");
-    Render_printAt(uiX, uiY + 11, L"Space:공격 H:포션 B:폭탄 Q:종료");
+    Render_printAt(uiX, uiY + 11, L"Space:공격 C:원거리 H:포션 B:폭탄 Q:종료");
 }
 
 void Render_refreshLog(const Game* game) {

@@ -13,4 +13,14 @@
 */
 void Combat_meleeAttack(Game* game);
 
+/*
+[Function]
+
+* 역할: 플레이어 원거리 공격 명령을 Projectile 시스템에 위임한다.
+* 입력: game - 플레이어 방향과 ProjectileSystem을 포함한 게임 상태 포인터
+* 출력: PROJECTILE_PLAYER_WIND 생성/즉시 충돌 결과가 게임 상태와 로그에 반영된다.
+* 주의: input은 이 함수만 호출하며 실제 발사/충돌 처리는 Projectile 시스템이 담당한다.
+*/
+void Combat_rangedAttack(Game* game);
+
 #endif
